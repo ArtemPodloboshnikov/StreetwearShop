@@ -1,0 +1,1 @@
+export const CARD_PHOTO_ID = 'photo_card';

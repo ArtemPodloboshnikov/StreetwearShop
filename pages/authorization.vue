@@ -1,0 +1,113 @@
+<template>
+    <div class="layout">
+        <div class="logo logo_top"></div>
+        <div class="logo logo_left"></div>
+        <form class="form" @submit.prevent="formHandler">
+            <input v-model="formData.phone" />
+            <input v-model="formData.pwd" />
+            <input v-model="formData.pwd_repeat" />
+            <input type="submit" :value="register_btn" />
+        </form>
+        <div class="logo logo_right"></div>
+        <div class="logo logo_bottom"></div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { API_ROUTE_REGISTET, REGISTER_BTN_TEXT } from '@/constants/';
+    type FormData = {
+        phone: string,
+        pwd: string,
+        pwd_repeat: string
+    }
+
+    type ResponseRegister = {
+        access_token: string
+    }
+
+    const formData: FormData = {
+        phone: '',
+        pwd: '',
+        pwd_repeat: ''
+    }
+    export default {
+        layout: 'empty',
+        data: () => ({
+            formData,
+            register_btn: REGISTER_BTN_TEXT
+        }),
+        methods: {
+            async formHandler() {
+                if (formData.pwd === formData.pwd_repeat) {
+                    await this.register(formData.phone, formData.pwd)
+                } else {
+                    alert('dsds')
+                }
+            },
+            async register(phone: string, pwd: string) {
+                try {
+                    // @ts-ignore
+                    const response: ResponseRegister = await this.$axios.$post(API_ROUTE_REGISTET,
+                    {
+                        phone,
+                        pwd
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': 'http://localhost:8080',
+                            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+                        }
+                    });
+                    console.log(response);
+
+                } catch(e: any) {
+                    console.log(e.response.data.message)
+                }
+            },
+        }
+    }
+</script>
+
+<style scoped>
+    .layout {
+        display: grid;
+        grid-template-columns: 20% 60% 20%;
+        grid-template-rows: 20% 60% 20%;
+        grid-template-areas: ". logo_t ."
+                            "logo_l form logo_r"
+                            ". logo_b .";
+        height: 100%;
+    }
+
+    .logo {
+        width: 100%;
+        height: 100%;
+        background-color: var(--danger);
+    }
+
+    .logo_top {
+        grid-area: logo_t;
+    }
+
+    .logo_left {
+        grid-area: logo_l;
+    }
+
+    .logo_right {
+        grid-area: logo_r;
+    }
+
+    .logo_bottom {
+        grid-area: logo_b;
+    }
+
+    .form {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        grid-area: form;
+        gap: 3%;
+    }
+</style>

@@ -1,0 +1,52 @@
+:root {
+  --primary: #FCFCFC;
+  --success: #3B54E8;
+  --danger: #E64056;
+  --warn: #FF9000;
+  --dark: #1E0120;
+}
+
+@font-face {
+  font-family: 'Ordina-Semibold';
+  src: local('Ordina-Semibold'),
+    url('~assets/fonts/Ordina-Semibold.ttf') format('truetype');
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Ordina-Semibold';
+}
+
+html, body {
+    background-blend-mode: overlay;
+    background-image: linear-gradient(45deg, var(--dark), var(--dark)), url('noise.jpg');
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+main {
+    /* width: calc(100% - 50px);
+    max-width: calc(100% - 260px); */
+    height: 100vh;
+}
+
+button {
+    cursor: pointer;
+}
+
+input, button {
+    outline: none;
+    border: none;
+}
+
+.content {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 20px;
+}
+
+.content > * {
+    color: var(--primary);
+}
