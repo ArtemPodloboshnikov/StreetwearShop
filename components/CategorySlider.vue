@@ -12,7 +12,7 @@
             tag="div"
             :style="!close ? `background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${srcs.slice(start, end)[i]});`: 'border: 4px solid var(--primary);'"
             :to="tos.slice(start, end)[i]"
-            :class="`${class_animation} ${close ? 'hide' : ''} category`"
+            :class="`${class_animation} ${close ? 'hide' : 'show'} category`"
             >
                 <h2 class="title">{{title.toLocaleUpperCase()}}</h2>
             </nuxt-link>

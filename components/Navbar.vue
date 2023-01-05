@@ -1,12 +1,12 @@
 <template>
-    <div class="navbar">
+    <div :class="`navbar ${isClose ? 'hidden' : 'show'}`">
         <nav>
             <div></div>
             <div class="links">
                 <nuxt-link
                 v-for="clothing in clothing_types"
                 :key="clothing.href"
-                :to="clothing.href"
+                :to="clothing.href + categories_by_link[clothing.href].tos[0]"
                 :style="(`/${route}` === clothing.href ? 'background: var(--primary); color: var(--dark)' : '')"
                 class="option"
                 >
@@ -26,6 +26,12 @@
         :tos="categories.tos"
         :close="isClose"
         />
+        <div :class="`unwrap ${!isClose ? 'none' : ''}`">
+            <i
+            class='bx bxs-chevrons-down'
+            @click="closeToggle"
+            ></i>
+        </div>
     </div>
 </template>
 
@@ -44,7 +50,8 @@
         },
         data: () => ({
             clothing_types: NAVBAR_OPTIONS,
-            isClose: false
+            categories_by_link: CATEGORIES_BY_LINK,
+            isClose: true
         }),
         computed: {
             categories(): {
@@ -70,11 +77,6 @@
             closeToggle() {
                 // @ts-ignore
                 this.isClose = !this.isClose;
-                // @ts-ignore
-                if (this.isClose) {
-                    // @ts-ignore
-                    document.getElementsByClassName('navbar')[0].style.top = -90 + 'px';
-                }
             }
         }
     }
@@ -127,5 +129,31 @@
         justify-items: center;
         align-items: center;
         text-decoration: none;
+    }
+
+    .unwrap {
+        position: absolute;
+        background: var(--dark);
+        padding: 10px;
+        margin-left: 94%;
+        margin-top: 8%;
+        font-size: 40px;
+        color: var(--primary);
+        cursor: pointer;
+        z-index: 40;
+    }
+
+    .hidden {
+        height: 140px;
+        top: -90px;
+    }
+
+    .show {
+        height: fit-content;
+        top: 0px;
+    }
+
+    .none {
+        display: none;
     }
 </style>

@@ -6,38 +6,41 @@
     <button>
      <i class="bx bx-cart"></i>
     </button>
-    <div class="gender">
+    <Genders class="gender_wrap" section="params"/>
+    <ColorPicker section="params"/>
+    <!-- <div class="gender">
       <button>
        <i class="bx bx-female"></i>
       </button>
       <button>
        <i class="bx bx-male"></i>
       </button>
-    </div>
+    </div> -->
     <button>
      <i class="bx bx-purchase-tag"></i>
     </button>
   </aside>
 </template>
 <script lang="ts">
+    import Genders from './Gender.vue';
+    import ColorPicker from './ColorPicker.vue';
     import { ACCOUNT_ROUTE, Gender } from '@/constants/';
 
-    let gender: Gender;
-
-
     export default {
+      components: { Genders, ColorPicker },
       data:() => ({
         active: 'user',
         account_route: ACCOUNT_ROUTE,
-        gender,
         Gender
       }),
+      computed: {
+            gender() {
+                // @ts-ignore
+                return this.$store.state.params.gender;
+            }
+      },
       methods: {
-          toggleGender: (gen: Gender) => {
-            gender = gen
-            console.log(gender)
-          }
-        }
+      }
     }
 </script>
 <style scoped>
@@ -55,13 +58,10 @@
       font-size: 40px;
     }
 
-    .gender {
-      display: grid;
-      grid-auto-flow: column;
-    }
-
-    .gender > button:first-child {
-      border-right: 4px solid var(--dark);
+    .gender_wrap {
+      height: 75px !important;
+      width: 100%;
+      border-bottom: 4px solid var(--dark);
     }
 
     button, a {

@@ -1,6 +1,6 @@
 export const state = () => ({
     gender: 0,
-    color: '',
+    color: 'чёрный',
     sizes: [0]
 })
 

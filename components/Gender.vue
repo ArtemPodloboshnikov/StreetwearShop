@@ -1,5 +1,5 @@
 <template>
-    <div class="gender">
+    <div :class="`gender ${$attrs.class}`">
         <button
         :class="`${active === Gender.FEMALE ? 'active' : 'btn'}`"
         @click="() => toggleGender(Gender.FEMALE)"
@@ -19,14 +19,21 @@
     import { Gender } from '@/constants/';
 
     export default {
-        data: () => ({
-            active: Gender.FEMALE,
+        props: {
+            section: {
+                type: String,
+                required: true
+            }
+        },
+        // @ts-ignore
+        data: ({$store, section}) => ({
+            active: $store.state[section].gender,
             Gender
         }),
         methods: {
             toggleGender(gender: Gender) {
                 // @ts-ignore
-                this.$store.commit('params/set', { name: 'gender', value: gender });
+                this.$store.commit(`${this.section}/set`, { name: 'gender', value: gender });
                 // @ts-ignore
                 this.active = gender;
             }
@@ -36,8 +43,8 @@
 
 <style scoped>
     .gender {
-        display: flex;
-        height: 200px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .gender button {

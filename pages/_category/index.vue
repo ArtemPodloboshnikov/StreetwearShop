@@ -7,31 +7,63 @@
             :tos="categories.tos"
             />
         </div>
+        <div class="gender">
+            <div
+            :class="`man ${gender === Gender.MALE ? 'active' : ''}`"
+            @click="()=>setGender(Gender.MALE)"
+            >
+                <h1 class="gender_titles">{{title_man}}</h1>
+            </div>
+            <div
+            :class="`woman ${gender === Gender.FEMALE ? 'active' : ''}`"
+            @click="()=>setGender(Gender.FEMALE)"
+            >
+                <h1 class="gender_titles">{{title_woman}}</h1>
+            </div>
+        </div>
         <div class="params">
             <Sizes :sizes="sizes" class="sizes" />
-            <Gender />
-            <ColorPicker />
+            <ColorPicker section="params" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { CATEGORIES_BY_LINK, SIZES } from '@/constants/';
+    // eslint-disable-next-line import/named
+    import { Dictionary } from 'vue-router/types/router';
+    import {
+        CATEGORIES_BY_LINK,
+        Gender,
+        SIZES,
+        MAN_TITLE,
+        WOMAN_TITLE,
+        SHOES_PATH,
+        UNDERWEAR_PATH,
+        OUTERWEAR_PATH,
+        ACCESSORIES_PATH
+    } from '@/constants/';
+    import { matchPaths } from '@/helpers/matchPaths';
     import Slider from '@/components/CategorySlider.vue';
     import Sizes from '@/components/Sizes.vue';
-    import Gender from '@/components/Gender.vue';
     import ColorPicker from '@/components/ColorPicker.vue';
 
     export default {
         components : {
             Slider,
             Sizes,
-            Gender,
             ColorPicker
         },
         layout: 'empty',
+        validate({ params }: { params: Dictionary<string>}) {
+            const currentPath = `/${params.category}`;
+            const accessPaths = [SHOES_PATH, UNDERWEAR_PATH, OUTERWEAR_PATH, ACCESSORIES_PATH];
+            return matchPaths(currentPath, accessPaths);
+        },
         data: () => ({
-            sizes: SIZES
+            sizes: SIZES,
+            title_man: MAN_TITLE,
+            title_woman: WOMAN_TITLE,
+            Gender
         }),
         computed: {
             categories(): {
@@ -47,6 +79,17 @@
                     // @ts-ignore
                     tos: CATEGORIES_BY_LINK[`/${route}`].tos.map(link => this.$route.fullPath + link)
                 }
+            },
+            gender() {
+                // @ts-ignore
+                return this.$store.state.params.gender;
+            }
+
+        },
+        methods: {
+            setGender(gender: number) {
+                // @ts-ignore
+                this.$store.commit(`params/set`, { name: 'gender', value: gender });
             }
         }
     }
@@ -56,15 +99,51 @@
     .categories {
         grid-column: 2 / 12;
         margin-top: 3%;
+        height: fit-content;
     }
     .params {
         grid-column: 2 / 12;
         width: 100%;
-        display: flex;
+        display: grid;
         gap: 20px;
+        grid-template-columns: 40% 60%;
     }
 
-    .sizes {
-        width: 40%;
+    .gender {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-column: 2 / 12;
+        justify-items: center;
+    }
+
+    .man,
+    .woman {
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 400px;
+        width: 50%;
+        display: grid;
+        cursor: pointer;
+    }
+
+    .man {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/category/man.avif');
+    }
+
+    .woman {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/category/woman.avif');
+    }
+
+    .gender_titles {
+        transform: rotate(-90deg);
+        justify-self: right;
+        align-self: center;
+        margin: 0;
+        padding: 0;
+        height: 45px;
+    }
+
+    .active {
+        outline: 5px solid var(--danger);
     }
 </style>

@@ -17,22 +17,22 @@ type CategoriesData = {
 
 export const CATEGORIES_BY_LINK: CategoriesData = {
     [SHOES_PATH]: {
-        srcs: ['/navbar/bekini.webp', '/navbar/coat.webp', '/navbar/fur_coat.webp', 'jacket', 't_shirts'],
+        srcs: ['/navbar/bekini.avif', '/navbar/coat.avif', '/navbar/fur_coat.avif', 'jacket', 't_shirts'],
         titles: ['бикини', 'пальто', 'шубы', 'куртки', 'футболки'],
         tos: ['/bekini', '/coat', '/furcoat', '/jacket', '/tshirts']
     },
     [UNDERWEAR_PATH]: {
-        srcs: ['/navbar/bekini.webp', '/navbar/coat.webp', '/navbar/fur_coat.webp', 'jacket', 't_shirts'],
+        srcs: ['/navbar/bekini.avif', '/navbar/coat.avif', '/navbar/fur_coat.avif', 'jacket', 't_shirts'],
         titles: ['бикини', 'пальто', 'шубы', 'куртки', 'футболки'],
         tos: ['/bekini', '/coat', '/furcoat', '/jacket', '/tshirts']
     },
     [OUTERWEAR_PATH]: {
-        srcs: ['/navbar/bekini.webp', '/navbar/coat.webp', '/navbar/fur_coat.webp', '/navbar/jacket.webp', '/navbar/t_shirts.webp', '/navbar/bekini.webp'],
+        srcs: ['/navbar/bekini.avif', '/navbar/coat.avif', '/navbar/fur_coat.avif', '/navbar/jacket.avif', '/navbar/t_shirts.avif', '/navbar/bekini.avif'],
         titles: ['бикини', 'пальто', 'шубы', 'куртки', 'футболки', 'бикини'],
         tos: ['/bekini', '/coat', '/furcoat', '/jacket', '/tshirts', '/bekini']
     },
     [ACCESSORIES_PATH]: {
-        srcs: ['/navbar/bekini.webp', '/navbar/coat.webp', '/navbar/fur_coat.webp', 'jacket', 't_shirts'],
+        srcs: ['/navbar/bekini.avif', '/navbar/coat.avif', '/navbar/fur_coat.avif', 'jacket', 't_shirts'],
         titles: ['бикини', 'пальто', 'шубы', 'куртки', 'футболки'],
         tos: ['/bekini', '/coat', '/furcoat', '/jacket', '/tshirts']
     },
@@ -134,22 +134,22 @@ export const TABLES_SIZES = {
 // root
 export const DATA_IMAGES = [
     {
-        src: '/root/sneakers.jpg',
+        src: '/root/sneakers.avif',
         alt: 'Обувь',
         to: SHOES_PATH
     },
     {
-        src: '/root/pants.jpg',
+        src: '/root/pants.avif',
         alt: 'Нижняя одежда',
         to: UNDERWEAR_PATH
     },
     {
-        src: '/root/jacket.jpg',
+        src: '/root/jacket.avif',
         alt: 'Верхняя одежда',
         to: OUTERWEAR_PATH
     },
     {
-        src: '/root/cap.jpg',
+        src: '/root/cap.avif',
         alt: 'Аксессуары',
         to: ACCESSORIES_PATH
     },
@@ -219,6 +219,32 @@ export const COLORS = [
     },
     {
         hex: '#14e6f5',
-        text: Colors.PINK
+        text: Colors.TURQUOISE
     }
 ]
+
+// FAQ
+
+export const FAQ_CONTENT = [
+    {
+        title: 'Возврат средств',
+        content: 'ваыаыаывавааыаыавыавыаыава'
+    }
+]
+
+// admin
+
+export const CATEGORIES: {[key: number]: { [clothes: string]: string[]}} = {
+    [Gender.MALE]: {
+        'Обувь': ['кроссовки', 'кеды'],
+        'Верхняя одежда': ['футболки', 'куртки', 'майки', 'худи'],
+        'Нижняя одежда': ['шорты', 'брюки', 'джинсы'],
+        'Аксессуары': ['бейсболки', 'кольца']
+    },
+    [Gender.FEMALE]: {
+        'Обувь': ['кроссовки', 'кеды'],
+        'Верхняя одежда': ['футболки', 'куртки', 'майки', 'худи'],
+        'Нижняя одежда': ['шорты', 'брюки', 'джинсы'],
+        'Аксессуары': ['бейсболки', 'кольца']
+    }
+}

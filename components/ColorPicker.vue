@@ -29,9 +29,17 @@
     import { COLORS } from  '@/constants/';
 
     export default {
-        data: () => ({
+        props: {
+            section: {
+                type: String,
+                required: true
+            }
+        },
+        // @ts-ignore
+        data: ({$store, section}) => ({
             colors: COLORS,
-            active: COLORS[0].hex,
+            // @ts-ignore
+            active: COLORS.find(color => color.text === $store.state[section].color).hex,
             isShow: false
         }),
         methods: {
@@ -39,9 +47,11 @@
                 // @ts-ignore
                 this.active = color.hex;
                 // @ts-ignore
-                this.$store.commit('params/set', { name: 'color', value: color.text });
+                this.$store.commit(`${this.section}/set`, { name: 'color', value: color.text });
                 // @ts-ignore
                 console.log(this.$store.state.params.color);
+                // @ts-ignore
+                console.log(COLORS.find(color => color.text === this.$store.state[this.section].color).hex)
             },
             showColors() {
                 // @ts-ignore

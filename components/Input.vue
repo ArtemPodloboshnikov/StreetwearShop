@@ -14,13 +14,13 @@
             @click="togglePassword"></i>
         </div>
         <div v-if="message && error(value)" class="hint">
-
+            {{ message }}
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+    import { PropType } from 'vue';
 
     const typeIcons: {[key: string]: string} = {
         'text': 'question-mark',

@@ -36,15 +36,32 @@
 <script lang="ts">
     // eslint-disable-next-line import/named
     import { NuxtAxiosInstance } from '@nuxtjs/axios';
-    import { API_GET, COMPANY_NAME, NAVBAR_OPTIONS } from '@/constants/';
-    import { Product } from '@/typings/';
+    // eslint-disable-next-line import/named
+    import { Dictionary } from 'vue-router/types/router';
+    import { API_GET, COMPANY_NAME, NAVBAR_OPTIONS, CATEGORIES_BY_LINK } from '@/constants/';
+    import { matchPaths } from '@/helpers/matchPaths';
     import Card from '~/components/Card.vue';
     import Paginator from '~/components/Paginator.vue';
+
+    export type Product = {
+      albumId: number,
+      id: number,
+      title: string,
+      url: string,
+      thumbnailUrl: string
+    }
+
     const pages = new Array(100).fill(1).map((_, i) => { return i+1})
     export default {
         components: {
           Card,
           Paginator
+        },
+        validate({ params }: {params: Dictionary<string>}) {
+            const category = `/${params.category}`;
+            const subcategory = `/${params.subcategory}`;
+            const accessPaths = [...CATEGORIES_BY_LINK[category].tos];
+            return matchPaths(subcategory, accessPaths);
         },
         async asyncData({ $axios }: {$axios: NuxtAxiosInstance}) {
             const products: Product[] = await $axios.$get(API_GET);

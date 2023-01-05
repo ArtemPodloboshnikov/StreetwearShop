@@ -3,10 +3,9 @@
         <div class="logo logo_top"></div>
         <div class="logo logo_left"></div>
         <form class="form" @submit.prevent="formHandler">
-            <input v-model="formData.phone" />
-            <input v-model="formData.pwd" />
-            <input v-model="formData.pwd_repeat" />
-            <input type="submit" :value="register_btn" />
+            <Inputs :set="()=>setState('login')" icon="user" />
+            <Inputs :set="()=>setState('password')" type="password" />
+            <button type="submit">{{ register_btn }}</button>
         </form>
         <div class="logo logo_right"></div>
         <div class="logo logo_bottom"></div>
@@ -14,7 +13,16 @@
 </template>
 
 <script lang="ts">
-    import { API_ROUTE_REGISTET, REGISTER_BTN_TEXT } from '@/constants/';
+    import {
+        API_ROUTE_REGISTET,
+        REGISTER_BTN_TEXT,
+        TITLE_AUTH,
+        DESCRIPTION_AUTH,
+        KEYWORDS_AUTH
+    } from '@/constants/';
+
+    import Inputs from '~/components/Input.vue';
+
     type FormData = {
         phone: string,
         pwd: string,
@@ -31,10 +39,26 @@
         pwd_repeat: ''
     }
     export default {
+        components: { Inputs },
         layout: 'empty',
         data: () => ({
             formData,
             register_btn: REGISTER_BTN_TEXT
+        }),
+        head: () => ({
+            title: TITLE_AUTH,
+            meta: [
+                {
+                    hid: DESCRIPTION_AUTH.name,
+                    name: DESCRIPTION_AUTH.name,
+                    content: DESCRIPTION_AUTH.text
+                },
+                {
+                    hid: KEYWORDS_AUTH.name,
+                    name: KEYWORDS_AUTH.name,
+                    content: KEYWORDS_AUTH.text
+                }
+            ]
         }),
         methods: {
             async formHandler() {
@@ -64,6 +88,10 @@
                 } catch(e: any) {
                     console.log(e.response.data.message)
                 }
+            },
+            setState(stateName: string) {
+                // @ts-ignore
+                return (e: any) => this.$store.commit('authorization/set', { name: stateName, value: e?.target?.value})
             },
         }
     }

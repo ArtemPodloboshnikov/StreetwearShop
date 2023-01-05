@@ -14,7 +14,7 @@
             accept="image/*"
             @input="handleInput"
             />
-            {{placeholder}}
+            <p>{{placeholder}}</p>
         </label>
         <div v-if="(data_files.length !== 0)" class="galary">
             <img
@@ -34,8 +34,6 @@
         name: string,
         src: string
     }
-
-
 
     export default {
         props: {
@@ -78,7 +76,17 @@
                 // @ts-ignore
                 this.galaryHandler(files)
             },
-            galaryHandler(files: FileList) {
+            async readFileAsDataURL(file: File) {
+                const result: DataFile = await new Promise((resolve) => {
+                    const fileReader = new FileReader();
+                    // @ts-ignore
+                    fileReader.onload = (e) => resolve({ name: file.name, src: e.target.result});
+                    fileReader.readAsDataURL(file);
+                });
+
+                return result;
+            },
+            async galaryHandler(files: FileList) {
                 const datas: DataFile[] = [];
                 // @ts-ignore
                 // eslint-disable-next-line no-cond-assign
@@ -86,14 +94,8 @@
                     if (!f.type.match('image.*')) {
                         continue;
                     }
-                    const reader = new FileReader();
-                    reader.onload = (function(theFile) {
-                        return function(e: any) {
-                            // @ts-ignore
-                            datas.push({ name: theFile.name, src: e.target.result})
-                        };
-                    })(f);
-                    reader.readAsDataURL(f);
+                    // @ts-ignore
+                    datas.push(await this.readFileAsDataURL(f))
                     // @ts-ignore
                     if (!this.multiple) break
                 }

@@ -1,9 +1,9 @@
 <template>
-    <div class="card">
+    <div :class="`card ${$attrs.class}`">
         <img class="image" :src="src" :alt="alt" />
         <div class="titles">
             <h1>{{brand}}</h1>
-            <h3>{{model.slice(0, 22) + '...'}}</h3>
+            <h3>{{model.length >= 16 ? (model.slice(0, 16) + '...') : model}}</h3>
         </div>
         <div class="price">
             <h1>{{price}}₽</h1>

@@ -31,13 +31,35 @@ main {
     height: 100vh;
 }
 
-button {
+button,
+summary {
     cursor: pointer;
 }
 
 input, button {
     outline: none;
     border: none;
+}
+
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+textarea {
+    outline: none;
+    border: none;
+    color: var(--dark) !important;
+    resize: none;
+    padding: 10px 10px 10px 15px;
+}
+
+textarea::placeholder {
+    text-align: center;
 }
 
 .content {
