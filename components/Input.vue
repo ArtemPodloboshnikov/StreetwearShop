@@ -7,13 +7,14 @@
             :max="max"
             :min="min"
             :type="passwordOpen ? 'text' : type"
-            @input="set"
+            @input="inputHandler"
+            @blur="checkActivate"
             />
             <i
             :class="`bx bx-${passwordOpen ? 'lock-open-alt' : (icon ? icon : typeIcons[type])}`"
             @click="togglePassword"></i>
         </div>
-        <div v-if="message && error(value)" class="hint">
+        <div v-if="message && !error(value) && isCheck" class="hint">
             {{ message }}
         </div>
     </div>
@@ -25,7 +26,8 @@
     const typeIcons: {[key: string]: string} = {
         'text': 'question-mark',
         'email': 'envelope',
-        'password': 'lock-alt'
+        'password': 'lock-alt',
+        'tel': 'phone'
     }
 
     export default {
@@ -67,7 +69,8 @@
         data: () => ({
             typeIcons,
             passwordOpen: false,
-            value: ''
+            value: '',
+            isCheck: false
         }),
         methods: {
             togglePassword(){
@@ -76,6 +79,21 @@
                     // @ts-ignore
                     this.passwordOpen = !this.passwordOpen;
                 }
+            },
+            checkActivate() {
+                // @ts-ignore
+                this.isCheck = true;
+                // @ts-ignore
+                if (this.error(this.value) || this.value === '') {
+                    // @ts-ignore
+                    this.isCheck = false;
+                }
+            },
+            inputHandler(e: Event) {
+                // @ts-ignore
+                this.value = e.target.value;
+                // @ts-ignore
+                this.set(e);
             }
         }
     }
@@ -100,6 +118,7 @@
         height: 100%;
         min-height: 50px;
         padding-left: 15px;
+        font-size: 16px;
     }
 
     .input > input::placeholder {
@@ -116,5 +135,9 @@
         font-size: 30px;
         color: var(--dark);
         cursor: pointer;
+    }
+
+    .hint {
+        color: var(--danger);
     }
 </style>

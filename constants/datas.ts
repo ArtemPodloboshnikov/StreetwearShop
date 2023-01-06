@@ -227,8 +227,8 @@ export const COLORS = [
 
 export const FAQ_CONTENT = [
     {
-        title: 'Возврат средств',
-        content: 'ваыаыаывавааыаыавыавыаыава'
+        question: 'Возврат средств',
+        answer: 'ваыаыаывавааыаыавыавыаыава'
     }
 ]
 

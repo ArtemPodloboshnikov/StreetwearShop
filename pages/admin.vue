@@ -26,8 +26,8 @@
                     <Sizes class="sizes" :sizes="sizes" />
                     <div class="selects">
                         <Genders section="admin" />
-                        <Selects :placeholder="placeholders.category" :set="()=>setState('category')" :options="Object.keys(categories[gender])" />
-                        <Selects :placeholder="placeholders.subcategory" :set="()=>setState('subcategory')" :options="categories[gender][category] || []" />
+                        <Selects :placeholder="placeholders.category" :set="setState('category')" :options="Object.keys(categories[gender])" />
+                        <Selects :placeholder="placeholders.subcategory" :set="setState('subcategory')" :options="categories[gender][category] || []" />
                     </div>
                 </div>
             </template>
@@ -152,8 +152,6 @@
                 }
             },
             setState(stateName: string) {
-                // @ts-ignore
-                console.log(this.category)
                 const getValue = (e: any) => { return (e?.target?.value ? e?.target?.value : (Array.isArray(e) ? e : ''))}
                 // @ts-ignore
                 return (e: any) => this.$store.commit('admin/set', { name: stateName, value: getValue(e)})

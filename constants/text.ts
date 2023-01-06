@@ -11,6 +11,13 @@ export const CATEGORY_PLACEHOLDER = 'Категория';
 export const SUBCATEGORY_PLACEHOLDER = 'Подкатегория';
 // authorization
 export const REGISTER_BTN_TEXT = 'Зарегистрироваться';
+export const PHONE_PLACEHOLDER = 'Номер телефона';
+export const PASSWORD_PLACEHOLDER = 'Пароль';
+export const PASSWORD_REPEAT_PLACEHOLDER = 'Повторите пароль';
+export const MESSAGE_ERROR_PASSWORD = 'Ваш пароль слишком короткий';
+export const MESSAGE_ERROR_PHONE = 'Телефон имеет неправильный формат';
+export const WRONG_FORMAT_ERROR = 'Поля заполнены неправильно';
+export const TITLE_WRONG_FORMAT = 'Неправильный формат';
 //
 export const COMPANY_NAME = 'Company Name';
 // category

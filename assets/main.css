@@ -12,6 +12,12 @@
     url('~assets/fonts/Ordina-Semibold.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Ordina-Bold';
+    src: local('Ordina-Bold'),
+      url('~assets/fonts/Ordina-Bold.ttf') format('truetype');
+  }
+
 * {
     box-sizing: border-box;
     font-family: 'Ordina-Semibold';
@@ -41,7 +47,11 @@ input, button {
     border: none;
 }
 
-
+button {
+    text-transform: uppercase;
+    font-family: 'Ordina-Bold';
+    font-size: 20px;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

@@ -80,7 +80,7 @@
                     tos: CATEGORIES_BY_LINK[`/${route}`].tos.map(link => this.$route.fullPath + link)
                 }
             },
-            gender() {
+            gender(): number {
                 // @ts-ignore
                 return this.$store.state.params.gender;
             }

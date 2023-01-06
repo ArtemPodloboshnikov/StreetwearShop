@@ -1,6 +1,7 @@
 export const state = () => ({
     login: '',
-    password: ''
+    password: '',
+    password_repeat: ''
 })
 
 export const mutations = {

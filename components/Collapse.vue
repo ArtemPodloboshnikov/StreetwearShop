@@ -2,11 +2,11 @@
     <div :class="`wrap ${$attrs.class}`">
         <details
         v-for="values in data"
-        :key="values.title"
+        :key="values.question"
         class=""
         >
-            <summary class="title">{{values.title}}</summary>
-            <div class="content">{{values.content}}</div>
+            <summary class="title">{{values.question}}</summary>
+            <div class="content">{{values.answer}}</div>
         </details>
     </div>
 </template>
@@ -14,8 +14,8 @@
 <script lang="ts">
     import { PropType } from 'vue';
     type Content = {
-        title: string,
-        content: string
+        question: string,
+        answer: string
     }
 
     export default {

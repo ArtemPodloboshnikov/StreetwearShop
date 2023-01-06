@@ -1,13 +1,13 @@
-<template >
+<template>
     <transition name="slide-fade">
-        <div v-if="show && showLocal" class="toast">
+        <div v-if="show" class="toast">
             <div class="controllers">
                 <h3>{{title}}</h3>
-                <button @click="close()">
+                <button @click="close">
                     <i class="bx bx-x"></i>
                 </button>
             </div>
-            <hr/>
+            <div class="hr" />
             <div class="message">
                 <p>{{message}}</p>
             </div>
@@ -16,6 +16,8 @@
 </template>
 
 <script lang="ts">
+    import { PropType } from 'vue';
+
     export default {
         props: {
             title: {
@@ -29,15 +31,10 @@
             show: {
                 type: Boolean,
                 required: true
-            }
-        },
-        data: () => ({
-            showLocal: true
-        }),
-        methods: {
-            close() {
-                // @ts-ignore
-                this.showLocal = false;
+            },
+            close: {
+                type: Function as PropType<()=>void>,
+                default: null
             }
         }
     }
@@ -51,20 +48,29 @@
         display: flex;
         flex-direction: column;
         left: 50%;
-        top: 10%;
+        top: 3%;
         transform: translateX(-50%);
         z-index: 100;
         background: var(--primary);
+        outline: 5px solid var(--dark);
     }
 
     .toast * {
         color: var(--dark);
     }
 
-    hr {
+    .hr {
         background-color: var(--dark);
         width: 100%;
-        margin: 0;
+        height: 2px;
+    }
+
+    button {
+        background: var(--dark);
+    }
+
+    button > i {
+        color: var(--primary) !important;
     }
 
     .controllers {
@@ -75,15 +81,16 @@
 
     .message {
         padding: 15px;
+        overflow-y: auto;
     }
 
     .slide-fade-enter-active {
         transition: all .3s ease;
     }
     .slide-fade-leave-active {
-        transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        transition: all .8s ease;
     }
     .slide-fade-enter, .slide-fade-leave-to {
-        opacity: 0;
+        top: -150px;
     }
 </style>

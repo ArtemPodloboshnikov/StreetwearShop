@@ -8,14 +8,6 @@
     </button>
     <Genders class="gender_wrap" section="params"/>
     <ColorPicker section="params"/>
-    <!-- <div class="gender">
-      <button>
-       <i class="bx bx-female"></i>
-      </button>
-      <button>
-       <i class="bx bx-male"></i>
-      </button>
-    </div> -->
     <button>
      <i class="bx bx-purchase-tag"></i>
     </button>
@@ -34,7 +26,7 @@
         Gender
       }),
       computed: {
-            gender() {
+            gender(): number {
                 // @ts-ignore
                 return this.$store.state.params.gender;
             }
