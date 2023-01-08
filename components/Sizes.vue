@@ -1,14 +1,16 @@
 <template>
     <div :class="`wrap ${$attrs.class}`">
         <div class="table_btn">
-            <i class='bx bx-ruler' @click="toggleTable"></i>
+            <span @click="toggleTable">
+                Таблица размеров <i class='bx bx-ruler'></i>
+            </span>
         </div>
         <div class="sizes_wrap">
             <div
-            v-for="(size, index) in sizes_constant"
+            v-for="size in sizes_constant"
             :key="size"
-            :class="`${ active_sizes.includes(index) ? 'active' : (sizes.includes(size) ? '' : 'none')} size`"
-            @click="() => changeSize(index)"
+            :class="`${ active_sizes.includes(size) ? 'active' : (sizes.includes(size) ? '' : 'none')} size`"
+            @click="() => changeSize(size)"
             >
                 {{size}}
             </div>
@@ -70,10 +72,14 @@
             sizes: {
                 type: Array as PropType<string[]>,
                 required: true
+            },
+            section: {
+                type: String,
+                required: true
             }
         },
-        data: () => ({
-            active_sizes: [0],
+        data: ({$store, section}) => ({
+            active_sizes: $store.state[section].sizes,
             sizes_constant: SIZES,
             showTable: false,
         }),
@@ -88,20 +94,20 @@
             }
         },
         methods: {
-            changeSize(index: number) {
+            changeSize(size: string) {
                 // @ts-ignore
-                if (this.active_sizes.includes(index) && this.active_sizes.length > 1) {
+                if (this.active_sizes.includes(size) && this.active_sizes.length > 1) {
                     // @ts-ignore
-                    const i = this.active_sizes.indexOf(index);
+                    this.active_sizes.splice(this.active_sizes.indexOf(size), 1);
                     // @ts-ignore
-                    this.active_sizes.splice(i, 1);
-                } else {
+                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: size})
                     // @ts-ignore
-                    this.active_sizes.push(index);
+                } else if (!this.active_sizes.includes(size)) {
+                    // @ts-ignore
+                    this.active_sizes.push(size);
+                    // @ts-ignore
+                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value:  this.active_sizes})
                 }
-
-                // @ts-ignore
-                this.$store.commit('params/set', { name: 'sizes', value:  this.active_sizes})
             },
             toggleTable() {
                 // @ts-ignore
@@ -156,13 +162,22 @@
         display: grid;
         justify-items: center;
         align-items: center;
-        font-size: 50px;
+        font-size: 18px;
     }
 
-    .table_btn > i {
+    .table_btn span {
+        display: grid;
+        align-items: center;
+        grid-auto-flow: column;
         cursor: pointer;
-        color: var(--pr);
+        gap: 5px;
+    }
 
+    .table_btn i {
+        color: var(--pr);
+        font-size: 45px;
+        position: relative;
+        top: 2px;
     }
 
     .tables_wrap {
@@ -176,6 +191,7 @@
         justify-items: center;
         align-items: center;
         backdrop-filter: blur(5px);
+        z-index: 101;
     }
 
     .tables {

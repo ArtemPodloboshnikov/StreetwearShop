@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="params">
-            <Sizes :sizes="sizes" class="sizes" />
+            <Sizes section="params" :sizes="sizes" class="sizes" />
             <ColorPicker section="params" />
         </div>
     </div>

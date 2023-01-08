@@ -4,8 +4,7 @@
             <input
             :value="value"
             :placeholder="placeholder"
-            @focus="showOptions"
-            @blur="closeOptions"
+            @focus="toggleOptions"
             />
             <i :class="`bx bx-${ icon }`"></i>
         </div>
@@ -55,17 +54,18 @@
             show_options: false
         }),
         methods: {
-            showOptions(e: any) {
+            toggleOptions(e: any) {
                 // @ts-ignore
                 e.target.blur()
-
                 // @ts-ignore
-                this.show_options = true;
+                if (this.show_options) {
+                    // @ts-ignore
+                    this.show_options = false;
+                } else {
+                    // @ts-ignore
+                    this.show_options = true;
+                }
 
-            },
-            closeOptions() {
-                // @ts-ignore
-                this.show_options = false;
             },
             clickOption(option: string) {
                 // @ts-ignore
@@ -78,7 +78,7 @@
                 // @ts-ignore
                 this.set(e);
                 // @ts-ignore
-                this.closeOptions();
+                this.show_options = false;
             },
         }
     }
@@ -95,7 +95,6 @@
     .input {
         display: grid;
         grid-template-columns: 80% 20%;
-
     }
 
     .input > input {

@@ -78,7 +78,7 @@
 
 <style scoped>
   .content {
-    grid-template-rows: auto auto auto;
+    grid-template-rows: 40% 10% 45%;
     margin-top: 4%;
   }
   .company_name {

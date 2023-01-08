@@ -118,7 +118,6 @@
         height: 100%;
         min-height: 50px;
         padding-left: 15px;
-        font-size: 16px;
     }
 
     .input > input::placeholder {

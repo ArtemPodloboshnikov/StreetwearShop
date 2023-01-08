@@ -1,7 +1,7 @@
 export const state = () => ({
     gender: 0,
-    color: 'чёрный',
-    sizes: [0]
+    colors: ['чёрный'],
+    sizes: ['XS']
 })
 
 export const mutations = {
@@ -12,5 +12,8 @@ export const mutations = {
         } else {
             state[name] = value
         }
+    },
+    remove(state, {name, value}) {
+        state[name].splice(state[name].indexOf(value), 1)
     }
 }

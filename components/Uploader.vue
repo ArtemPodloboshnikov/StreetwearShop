@@ -48,6 +48,10 @@
             set: {
                 type: Function as PropType<(payload: DataFile[]) => void>,
                 required: true
+            },
+            limit: {
+                type: Number,
+                default: 5
             }
         },
         data: () => ({
@@ -90,14 +94,14 @@
                 const datas: DataFile[] = [];
                 // @ts-ignore
                 // eslint-disable-next-line no-cond-assign
-                for (let i = 0, f; f = files[i]; i++) {
-                    if (!f.type.match('image.*')) {
+                for (let i = 0, file; file = files[i]; i++) {
+                    if (!file.type.match('image.*')) {
                         continue;
                     }
                     // @ts-ignore
-                    datas.push(await this.readFileAsDataURL(f))
+                    datas.push(await this.readFileAsDataURL(file))
                     // @ts-ignore
-                    if (!this.multiple) break
+                    if (!this.multiple || (i === this.limit - 1)) break
                 }
                 // @ts-ignore
                 this.data_files = datas;
@@ -151,13 +155,14 @@
     }
 
     .galary {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
         gap: 10px;
         width: 100%;
     }
 
     .galary img {
         object-fit: cover;
-        width: 30%;
+        width: 100%;
     }
 </style>

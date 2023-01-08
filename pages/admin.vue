@@ -21,9 +21,9 @@
                         <Textareas :placeholder="placeholders.description" :set="()=>setState('description')" />
                         <Inputs :set="setState('material')" :placeholder="placeholders.material" icon="bookmark-alt" />
                         <Inputs :set="setState('country')" :placeholder="placeholders.country" icon="flag" />
-                        <Uploader :id="ids.product_photos" :set="setState('card')" :placeholder="placeholders.photos" />
+                        <Uploader :multiple="true" :id="ids.product_photos" :set="setState('card')" :placeholder="placeholders.photos" />
                     </div>
-                    <Sizes class="sizes" :sizes="sizes" />
+                    <Sizes section="params" class="sizes" :sizes="sizes" />
                     <div class="selects">
                         <Genders section="admin" />
                         <Selects :placeholder="placeholders.category" :set="setState('category')" :options="Object.keys(categories[gender])" />

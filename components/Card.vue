@@ -47,10 +47,14 @@
     padding: 0;
   }
 
+  .card h1 {
+    font-size: 25px;
+  }
+
   .card {
     display: grid;
     grid-template-rows: 70% 20% 10%;
-    height: 390px;
+    height: 350px;
   }
   .titles {
     display: flex;

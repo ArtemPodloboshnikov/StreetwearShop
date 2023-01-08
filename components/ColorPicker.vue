@@ -1,7 +1,7 @@
 <template>
     <div class="wrap">
         <button
-        :style="`background: ${active};`"
+        :style="`background: linear-gradient(to left, ${active.length > 1 ? active.join(', ') : `${active[0]}, ${active[0]}`});`"
         class="color"
         @click="showColors"
         >
@@ -19,6 +19,7 @@
                 class="options"
                 @click="() => changeColor(color)"
                 >
+                    <i v-if="active.includes(color.hex)" class='bx bx-check'></i>
                 </div>
             </div>
         </div>
@@ -27,6 +28,7 @@
 
 <script lang="ts">
     import { COLORS } from  '@/constants/';
+    import { getHexFromColors } from '@/helpers/getHexFromColors';
 
     export default {
         props: {
@@ -39,19 +41,26 @@
         data: ({$store, section}) => ({
             colors: COLORS,
             // @ts-ignore
-            active: COLORS.find(color => color.text === $store.state[section].color).hex,
+            active: getHexFromColors($store.state[section].colors),
             isShow: false
         }),
         methods: {
             changeColor( color: {hex: string, text: string }) {
+                const colors: string[] = this.$store.state[this.section].colors;
+
                 // @ts-ignore
-                this.active = color.hex;
-                // @ts-ignore
-                this.$store.commit(`${this.section}/set`, { name: 'color', value: color.text });
-                // @ts-ignore
-                console.log(this.$store.state.params.color);
-                // @ts-ignore
-                console.log(COLORS.find(color => color.text === this.$store.state[this.section].color).hex)
+                if (this.active.includes(color.hex) && this.active.length > 1) {
+                    // @ts-ignore
+                    this.active.splice(this.active.indexOf(color.hex), 1);
+                    // @ts-ignore
+                    this.$store.commit(`${this.section}/remove`, { name: 'colors', value: color.text });
+                    // @ts-ignore
+                } else if(!this.active.includes(color.hex)) {
+                    // @ts-ignore
+                    this.active.push(color.hex);
+                    // @ts-ignore
+                    this.$store.commit(`${this.section}/set`, { name: 'colors', value: [...colors, color.text] });
+                }
             },
             showColors() {
                 // @ts-ignore
@@ -95,5 +104,8 @@
         height: 100px;
         cursor: pointer;
         position: relative;
+        display: grid;
+        justify-items: center;
+        align-items: center;
     }
 </style>
