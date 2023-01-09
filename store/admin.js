@@ -9,7 +9,8 @@ export const state = () => ({
     gender: 0,
     subcategory: '',
     card: [],
-    photos: []
+    photos: [],
+    sizes: ['XS']
 })
 
 export const mutations = {

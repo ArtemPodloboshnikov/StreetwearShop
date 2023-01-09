@@ -248,3 +248,123 @@ export const CATEGORIES: {[key: number]: { [clothes: string]: string[]}} = {
         'Аксессуары': ['Бейсболки', 'Кольца']
     }
 }
+
+export const MATERIALS = {
+    'Животного происхождения': [
+        'Шерсть',
+        'Шёлк',
+        'Габардин',
+        'Драп',
+        'Сукно',
+        'Кашемир',
+        'Шифон',
+        'Крепдешин',
+        'Бархат',
+    ],
+    'Растительного происхождения': [
+        'Ситец',
+        'Фланель',
+        'Байка',
+        'Батист',
+        'Миткаль',
+        'Вельвет',
+        'Интерлок',
+    ],
+    'Искусственные': [
+        'Вискоза',
+        'Акрил',
+        'Бамбук',
+        'Казеиновое волокно',
+        'Ацетатный шёлк',
+        'Тенсель',
+        'Модал'
+    ],
+    'Синтетические': [
+        'Капрон',
+        'Нейлон',
+        'Полиэстер',
+        'Дралон',
+        'Тергаль'
+    ]
+}
+
+export const COUNTRIES = [
+    'США',
+    'Германия',
+    'Южная Корея',
+    'Британия',
+    'Япония',
+    'Испания',
+    'Италия',
+    'Франция',
+    'Нидерланды',
+    'Китай',
+    'Швеция',
+    'Австрия',
+    'Канада',
+    'Турция',
+    'Финляндия',
+    'Норвегия',
+    'Россия'
+]
+
+export const BRANDS = {
+    'Спортивная': [
+        'NIKE',
+        'PUMA',
+        'FILA',
+        'GOLA',
+        'JOMA',
+        'DEHA',
+        'ERKE',
+        'ADIDAS',
+        'REEBOK',
+        'ASICS',
+        'UMBRO',
+        'KAPPA',
+        'UNDER ARMOUR',
+        'NEW BALANCE',
+        'CHAMPION',
+        'LOTTO',
+        'AIR JORDAN',
+        'ELLESSE',
+        'DIADORA',
+        'FOX RACING',
+        'CRAFT',
+        'DC'
+    ],
+    'Уличная': [
+        'OBEY',
+        'KITH',
+        'BAPE',
+        'GEOX',
+        'HUGO BOSS',
+        'OFF WHITE',
+        'FOUR TWO FOUR (424)',
+        'LEE',
+        'CONVERSE',
+        'LEVI’S',
+        'NEW ERA',
+        'ADDICT',
+        'LACOSTE',
+        'ARKET',
+        'NAPAPIJRI',
+        'HOLLISTER',
+    ],
+    'Скейтбордная': [
+        'VANS',
+        'DIME MTL',
+        'ADIO',
+        'ZERO SKATEBOARDS',
+        'GIRL SKATEBOARDS',
+        'RIPNDIP',
+        'ANTI SOCIAL SOCIAL CLUB',
+        'STUSSY',
+        'THRASHER',
+        'SUPREME',
+        'PALACE SKATEBOARDS',
+        'PRIMITIVE SKATEBOARDING',
+        'ANTIHERO SKATEBOARDS',
+        'HUF WORLDWIDE'
+    ]
+}

@@ -46,6 +46,7 @@
         }),
         methods: {
             changeColor( color: {hex: string, text: string }) {
+                // @ts-ignore
                 const colors: string[] = this.$store.state[this.section].colors;
 
                 // @ts-ignore

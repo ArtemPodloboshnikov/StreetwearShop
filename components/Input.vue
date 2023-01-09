@@ -2,7 +2,7 @@
     <div class="wrap">
         <div class="input">
             <input
-            v-bind="value"
+            :value="value"
             :placeholder="placeholder"
             :max="max"
             :min="min"
@@ -14,7 +14,7 @@
             :class="`bx bx-${passwordOpen ? 'lock-open-alt' : (icon ? icon : typeIcons[type])}`"
             @click="togglePassword"></i>
         </div>
-        <div v-if="message && !error(value) && isCheck" class="hint">
+        <div v-if="!error(value) && isCheck" class="hint">
             {{ message }}
         </div>
     </div>
@@ -55,7 +55,7 @@
             },
             message: {
                 type: String,
-                default: ''
+                default: 'Заполните поле'
             },
             error: {
                 type: Function as PropType<(text: string) => boolean>,
@@ -64,6 +64,10 @@
             set: {
                 type: Function as PropType<(payload: Event) => void>,
                 required: true
+            },
+            required: {
+                type: Boolean,
+                default: false
             }
         },
         data: () => ({
@@ -81,12 +85,17 @@
                 }
             },
             checkActivate() {
-                // @ts-ignore
-                this.isCheck = true;
-                // @ts-ignore
-                if (this.error(this.value) || this.value === '') {
+                    // @ts-ignore
+                if (this.required && this.value === '') {
+                    // @ts-ignore
+                    this.isCheck = true;
+                    // @ts-ignore
+                } else if (this.error(this.value) || this.value === '' || this.required) {
                     // @ts-ignore
                     this.isCheck = false;
+                } else {
+                    // @ts-ignore
+                    this.isCheck = true;
                 }
             },
             inputHandler(e: Event) {

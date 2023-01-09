@@ -78,6 +78,7 @@
                 required: true
             }
         },
+        // @ts-ignore
         data: ({$store, section}) => ({
             active_sizes: $store.state[section].sizes,
             sizes_constant: SIZES,

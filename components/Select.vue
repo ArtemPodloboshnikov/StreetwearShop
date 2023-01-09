@@ -8,8 +8,13 @@
             />
             <i :class="`bx bx-${ icon }`"></i>
         </div>
+        <div v-if="error" class="hint">
+                {{ message }}
+        </div>
         <div v-if="show_options" class="options_wrap">
-            <div class="options">
+            <div
+            v-if="Array.isArray(options)"
+            class="options">
                 <div
                 v-for="option in options"
                 :key="option"
@@ -19,6 +24,27 @@
                     {{ option }}
                 </div>
             </div>
+            <div
+            v-if="!Array.isArray(options)"
+            class="options">
+                <div
+                v-for="values, title in options"
+                :key="title"
+                class="section"
+                >
+                    <span>{{ title }}</span>
+                    <div
+                    v-for="option in values"
+                    :key="option"
+                    class="option"
+                    style="text-align: start"
+                    @click="()=>clickOption(option)"
+                    >
+                        <span>{{ option }}</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -45,13 +71,18 @@
                 required: true
             },
             options: {
-                type: Array as PropType<string[]>,
+                type: [Array, Object],
                 required: true
+            },
+            message: {
+                type: String,
+                default: 'Зыберите значение'
             }
         },
         data: () => ({
             value: '',
-            show_options: false
+            show_options: false,
+            error: false
         }),
         methods: {
             toggleOptions(e: any) {
@@ -61,6 +92,8 @@
                 if (this.show_options) {
                     // @ts-ignore
                     this.show_options = false;
+                    // @ts-ignore
+                    this.isError();
                 } else {
                     // @ts-ignore
                     this.show_options = true;
@@ -79,7 +112,21 @@
                 this.set(e);
                 // @ts-ignore
                 this.show_options = false;
+                // @ts-ignore
+                this.error = false;
             },
+            isError() {
+                // @ts-ignore
+                console.log(this.error)
+                // @ts-ignore
+                if (this.value === '') {
+                    // @ts-ignore
+                    this.error = true;
+                } else {
+                    // @ts-ignore
+                    this.error = false;
+                }
+            }
         }
     }
 </script>
@@ -126,6 +173,8 @@
         flex-direction: column;
         position: absolute;
         width: 100%;
+        height: 200px;
+        overflow-y: auto;
     }
 
     .options_wrap {
@@ -139,12 +188,31 @@
         cursor: pointer;
     }
 
+    .section:nth-child(5) {
+        border-top: 5px solid var(--warn);
+        background: var(--dark);
+    }
+
+    .section {
+        background: var(--primary);
+        text-align: center;
+        color: var(--danger);
+    }
     .option:not(:last-child) {
         border-bottom: 5px solid var(--warn);
+    }
+
+    .section:not(:last-child) {
+        border-bottom: 5px solid var(--dark);
     }
 
     .input > input:disabled {
         background: var(--primary);
         color: var(--dark);
+    }
+
+    .hint {
+        width: 100%;
+        color: var(--danger);
     }
 </style>

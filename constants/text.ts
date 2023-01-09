@@ -2,6 +2,10 @@
 export const MODEL_PLACEHOLDER = 'Модель товара';
 export const BRAND_PLACEHOLDER = 'Бренд';
 export const PRICE_PLACEHOLDER = 'Цена';
+export const SHOW_CARD_BTN = 'Показать карточку';
+export const SEND_DATA_BTN = 'Внести товар';
+export const TITLE_WRONG_EMPTY = 'Не все поля заполнены';
+export const EMPTY_FIELD_MESSAGE = 'Заполните необходимые поля, чтобы сохранить товар в базе данных';
 export const PREVIEW_PLACEHOLDER = 'Перетащите фото для карточки';
 export const DESCRIPTION_PLACEHOLDER = 'Описание товара';
 export const COUNTRY_PLACEHOLDER = 'Производитель';

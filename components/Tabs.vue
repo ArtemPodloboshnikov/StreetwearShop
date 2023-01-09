@@ -9,7 +9,7 @@
         {{title}}
       </button>
     </div>
-    <div>
+    <div class="tabs__content">
       <div
       v-for="(slot, index) in slots"
       :key="index"
@@ -64,6 +64,8 @@
     .tabs {
       border: 1px solid #e0e0e0;
       width: 100%;
+      display: grid;
+      grid-template-rows: 5% 95%;
     }
 
     .tabs__nav {
@@ -98,9 +100,14 @@
 
     .tabs__pane {
       display: none;
+      height: 100%;
     }
 
     .tabs__pane_show {
       display: block;
+    }
+
+    .tabs__content {
+      height: 100%;
     }
 </style>

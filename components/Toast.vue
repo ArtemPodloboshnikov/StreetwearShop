@@ -34,7 +34,7 @@
             },
             close: {
                 type: Function as PropType<()=>void>,
-                default: null
+                required: true
             }
         }
     }
