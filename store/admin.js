@@ -6,11 +6,12 @@ export const state = () => ({
     material: '',
     country: '',
     category: '',
-    gender: 0,
+    gender: 'мужчина',
     subcategory: '',
     card: [],
     photos: [],
-    sizes: ['XS']
+    sizes: ['XS'],
+    colors: ['чёрный']
 })
 
 export const mutations = {

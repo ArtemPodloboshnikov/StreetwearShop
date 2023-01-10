@@ -2,8 +2,8 @@ import { ACCESSORIES_PATH, OUTERWEAR_PATH, SHOES_PATH, UNDERWEAR_PATH } from "./
 
 // sidebar
 export enum Gender {
-    MALE,
-    FEMALE
+    MALE = 'мужчина',
+    FEMALE = 'женщина'
 }
 
 // category
@@ -234,7 +234,7 @@ export const FAQ_CONTENT = [
 
 // admin
 
-export const CATEGORIES: {[key: number]: { [clothes: string]: string[]}} = {
+export const CATEGORIES: {[key: string]: { [clothes: string]: string[]}} = {
     [Gender.MALE]: {
         'Обувь': ['Кроссовки', 'Кеды'],
         'Верхняя одежда': ['Футболки', 'Куртки', 'Майки', 'Худи'],

@@ -26,7 +26,7 @@
         Gender
       }),
       computed: {
-            gender(): number {
+            gender(): string {
                 // @ts-ignore
                 return this.$store.state.params.gender;
             }

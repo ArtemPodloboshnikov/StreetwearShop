@@ -80,14 +80,14 @@
                     tos: CATEGORIES_BY_LINK[`/${route}`].tos.map(link => this.$route.fullPath + link)
                 }
             },
-            gender(): number {
+            gender(): string {
                 // @ts-ignore
                 return this.$store.state.params.gender;
             }
 
         },
         methods: {
-            setGender(gender: number) {
+            setGender(gender: string) {
                 // @ts-ignore
                 this.$store.commit(`params/set`, { name: 'gender', value: gender });
             }

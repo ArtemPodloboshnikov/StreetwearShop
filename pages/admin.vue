@@ -27,9 +27,9 @@
                         <Selects :placeholder="placeholders.material" :set="setState('material')" :options="materials" icon="bookmark-alt"/>
                         <Selects :placeholder="placeholders.country" :set="setState('country')" :options="countries" icon="flag"/>
                         <!-- <Inputs :set="setState('country')" :placeholder="placeholders.country" icon="flag" /> -->
-                        <Uploader :id="ids.product_photos" :multiple="true" :set="setState('card')" :placeholder="placeholders.photos" />
+                        <Uploader :id="ids.product_photos" :multiple="true" :set="setState('photos')" :placeholder="placeholders.photos" />
                     </div>
-                    <Sizes section="admin" class="sizes" :sizes="sizes" />
+                    <Sizes section="admin" class="sizes" :sizes="SIZES" />
                     <div class="selects">
                         <Genders section="admin" />
                         <Selects :placeholder="placeholders.category" :set="setState('category')" :options="Object.keys(categories[gender])" />
@@ -82,8 +82,23 @@
         SHOW_CARD_BTN,
         SEND_DATA_BTN,
         EMPTY_FIELD_MESSAGE,
-        TITLE_WRONG_EMPTY
+        TITLE_WRONG_EMPTY,
+        API_CREATE_PRODUCT
      } from '@/constants/';
+
+     type Product = {
+        description: string,
+        category: string,
+        subcategory: string,
+        material: string,
+        country: string,
+        sizes: string[],
+        colors: string[],
+        model: string,
+        price: number,
+        images: string[],
+        gender: Gender
+     }
 
     export default {
         components: {
@@ -125,7 +140,7 @@
             title_toast: TITLE_WRONG_EMPTY,
             preview: false,
             tabs: ['Карточка', 'Страница', 'Категории'],
-            sizes: SIZES,
+            SIZES,
             categories: CATEGORIES,
             materials: MATERIALS,
             countries: COUNTRIES,
@@ -146,9 +161,13 @@
                 // @ts-ignore
                 return Number(this.$store.state.admin.price);
             },
-            card(): [{name: string, src: string}] {
+            card(): [{ name: string, src: string }] {
                 // @ts-ignore
                 return this.$store.state.admin.card;
+            },
+            photos(): [{ name: string, src: string }] {
+                // @ts-ignore
+                return this.$store.state.admin.photos;
             },
             description(): string {
                 // @ts-ignore
@@ -164,7 +183,7 @@
             },
             gender(): Gender {
                 // @ts-ignore
-                return Number(this.$store.state.admin.gender);
+                return this.$store.state.admin.gender;
             },
             country(): string {
                 // @ts-ignore
@@ -174,6 +193,14 @@
                 // @ts-ignore
                 return this.$store.state.admin.material;
             },
+            colors(): string[] {
+                // @ts-ignore
+                return this.$store.state.admin.colors;
+            },
+            sizes(): string[] {
+                // @ts-ignore
+                return this.$store.state.admin.sizes;
+            }
         },
         methods: {
             isFillCard() {
@@ -184,15 +211,39 @@
                     return false;
                 }
             },
-            isFillFields() {
+            async isFillFields() {
+                const product: Product = {
+                    // @ts-ignore
+                    description: this.description,
+                    // @ts-ignore
+                    category: this.category,
+                    // @ts-ignore
+                    subcategory: this.subcategory,
+                    // @ts-ignore
+                    material: this.material,
+                    // @ts-ignore
+                    country: this.country,
+                    // @ts-ignore
+                    sizes: this.sizes,
+                    // @ts-ignore
+                    model: this.model,
+                    // @ts-ignore
+                    price: this.price,
+                    // @ts-ignore
+                    images: [`${this.card[0].src}.avif`, ...this.photos.map(photo => `${photo.src}.avif`)],
+                    // @ts-ignore
+                    gender: this.gender,
+                    // @ts-ignore
+                    colors: this.colors
+                }
                 // @ts-ignore
-                if (this.isFillCard() && this.description &&
-                // @ts-ignore
-                    this.category && this.subcategory &&
-                // @ts-ignore
-                    this.material && this.country && this.sizes) {
+                if (this.isFillCard() && product.description &&
+                    product.category && product.subcategory &&
+                    product.material && product.country && product.sizes &&
+                    product.images.length > 1) {
                         // @ts-ignore
-                        this.showToast = false;
+                        const response = await this.createProduct(product);
+                        console.log(response);
                 } else {
                     // @ts-ignore
                     this.showToast = true;
@@ -212,6 +263,26 @@
             closeToast() {
                 // @ts-ignore
                 this.showToast = false;
+            },
+            async createProduct(product: Product) {
+                try {
+                    // @ts-ignore
+                    const response: any = await this.$axios.$post(API_CREATE_PRODUCT,
+                    {
+                        product
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': 'http://localhost:8080',
+                            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+                        }
+                    });
+                    return response;
+
+                } catch(e: any) {
+                    console.log(e.response.data.message)
+                }
             }
         }
     }

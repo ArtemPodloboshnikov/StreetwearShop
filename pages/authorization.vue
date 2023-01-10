@@ -27,11 +27,13 @@
         MESSAGE_ERROR_PASSWORD,
         MESSAGE_ERROR_PHONE,
         WRONG_FORMAT_ERROR,
-        TITLE_WRONG_FORMAT
+        TITLE_WRONG_FORMAT,
+        ACCESS_TOKEN_NAME
     } from '@/constants/';
 
     import Inputs from '~/components/Input.vue';
     import Toast from '~/components/Toast.vue';
+import { setCookie } from '~/helpers/setCookie';
 
     type ResponseRegister = {
         access_token: string
@@ -92,7 +94,10 @@
                 if (!this.isWrong()) {
                     // @ts-ignore
                     const response = await this.register(this.phone, this.pwd);
-                    console.log(response);
+                    if (response) {
+                        setCookie(ACCESS_TOKEN_NAME, response.access_token);
+                    }
+                    console.log(document.cookie);
                 }
             },
             async register(phone: string, pwd: string) {
@@ -113,7 +118,9 @@
                     return response;
 
                 } catch(e: any) {
-                    console.log(e.response.data.message)
+                    console.log(e.response.data.message);
+                    // @ts-ignore
+                    this.wrong = true;
                 }
             },
             setState(stateName: string) {
