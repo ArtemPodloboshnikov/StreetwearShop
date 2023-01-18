@@ -1,6 +1,6 @@
 <template>
     <div :class="`wrap ${$attrs.class}`">
-        <div class="table_btn">
+        <div v-if="isTable" class="table_btn">
             <span @click="toggleTable">
                 Таблица размеров <i class='bx bx-ruler'></i>
             </span>
@@ -76,11 +76,15 @@
             section: {
                 type: String,
                 required: true
+            },
+            isTable: {
+                type: Boolean,
+                default: true
             }
         },
         // @ts-ignore
         data: ({$store, section}) => ({
-            active_sizes: $store.state[section].sizes,
+            active_sizes: [...$store.state[section].sizes],
             sizes_constant: SIZES,
             showTable: false,
         }),
@@ -107,7 +111,7 @@
                     // @ts-ignore
                     this.active_sizes.push(size);
                     // @ts-ignore
-                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value:  this.active_sizes})
+                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value: this.active_sizes})
                 }
             },
             toggleTable() {

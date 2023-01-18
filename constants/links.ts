@@ -3,6 +3,8 @@ export const UNDERWEAR_PATH = '/underwear';
 export const OUTERWEAR_PATH = '/outerwear';
 export const ACCESSORIES_PATH = '/accessories'
 
-export const REDIRECT_AUTHORIZATION = '/authorization';
+export const AUTHORIZATION_ROUTE = '/authorization';
 
-export const ACCOUNT_ROUTE = '/account';
+export const PROFILE_ROUTE = '/profile';
+
+export const CART_ROUTE = '/cart';

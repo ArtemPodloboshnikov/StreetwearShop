@@ -1,13 +1,14 @@
 <template>
   <aside class="sidebar">
-    <nuxt-link tag="button" :to="account_route">
+    <nuxt-link tag="button" :to="profile_route">
      <i class="bx bx-user"></i>
     </nuxt-link>
-    <button>
+    <nuxt-link tag="button" :to="cart_route">
      <i class="bx bx-cart"></i>
-    </button>
+    </nuxt-link>
     <Genders class="gender_wrap" section="params"/>
     <ColorPicker section="params"/>
+    <Sizes class="sizes_wrap" section="params" :sizes="SIZES" :is-table="false" />
     <button>
      <i class="bx bx-purchase-tag"></i>
     </button>
@@ -16,14 +17,17 @@
 <script lang="ts">
     import Genders from './Gender.vue';
     import ColorPicker from './ColorPicker.vue';
-    import { ACCOUNT_ROUTE, Gender } from '@/constants/';
+    import Sizes from './Sizes.vue';
+    import { PROFILE_ROUTE, CART_ROUTE, Gender, SIZES } from '@/constants/';
 
     export default {
-      components: { Genders, ColorPicker },
+      components: { Genders, ColorPicker, Sizes },
       data:() => ({
         active: 'user',
-        account_route: ACCOUNT_ROUTE,
-        Gender
+        profile_route: PROFILE_ROUTE,
+        cart_route: CART_ROUTE,
+        Gender,
+        SIZES
       }),
       computed: {
             gender(): string {
@@ -54,6 +58,18 @@
       height: 75px !important;
       width: 100%;
       border-bottom: 4px solid var(--dark);
+    }
+
+    .sizes_wrap {
+      height: 400px !important;
+      /* justify-content: stretch; */
+      background: var(--dark);
+      padding: 0;
+    }
+
+    .sizes_wrap * {
+      gap: 0 !important;
+
     }
 
     button, a {

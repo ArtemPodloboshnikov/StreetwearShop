@@ -5,12 +5,12 @@
         <form class="form" @submit.prevent="formHandler">
             <Inputs :set="setState('login')" :placeholder="placeholders.phone" :error="phoneCheck" :message="messages.phone" type="tel" />
             <Inputs :set="setState('password')" :placeholder="placeholders.password" :error="passwordCheck" :message="messages.password" type="password" />
-            <Inputs :set="setState('password_repeat')" :placeholder="placeholders.password_repeat" type="password" />
+            <Inputs :set="setState('password_repeat')" :placeholder="placeholders.password_repeat" :error="passwordRepeatCheck" :message="messages.pwd_repeat" type="password" />
             <button type="submit">{{ register_btn }}</button>
         </form>
         <div class="logo logo_right"></div>
         <div class="logo logo_bottom"></div>
-        <Toast :title="titles.wrong_format" :message="messages.wrong_format" :show="wrong" :close="closeToast" />
+        <Toast :title="titles.toast" :message="messages.toast" :show="wrong" :close="closeToast" />
     </div>
 </template>
 
@@ -25,15 +25,18 @@
         PASSWORD_PLACEHOLDER,
         PASSWORD_REPEAT_PLACEHOLDER,
         MESSAGE_ERROR_PASSWORD,
+        MESSAGE_ERROR_PWD_REPEAT,
         MESSAGE_ERROR_PHONE,
         WRONG_FORMAT_ERROR,
         TITLE_WRONG_FORMAT,
-        ACCESS_TOKEN_NAME
+        TITLE_WRONG_SERVER,
+        ACCESS_TOKEN_NAME,
+        PROFILE_ROUTE
     } from '@/constants/';
 
     import Inputs from '~/components/Input.vue';
     import Toast from '~/components/Toast.vue';
-import { setCookie } from '~/helpers/setCookie';
+    import { setCookie } from '~/helpers/setCookie';
 
     type ResponseRegister = {
         access_token: string
@@ -51,11 +54,12 @@ import { setCookie } from '~/helpers/setCookie';
             },
             messages: {
                 password: MESSAGE_ERROR_PASSWORD,
+                pwd_repeat: MESSAGE_ERROR_PWD_REPEAT,
                 phone: MESSAGE_ERROR_PHONE,
-                wrong_format: WRONG_FORMAT_ERROR
+                toast: WRONG_FORMAT_ERROR
             },
             titles: {
-                wrong_format: TITLE_WRONG_FORMAT
+                toast: TITLE_WRONG_FORMAT
             },
             wrong: false
         }),
@@ -96,8 +100,17 @@ import { setCookie } from '~/helpers/setCookie';
                     const response = await this.register(this.phone, this.pwd);
                     if (response) {
                         setCookie(ACCESS_TOKEN_NAME, response.access_token);
+                        // @ts-ignore
+                        this.$router.push(PROFILE_ROUTE);
                     }
                     console.log(document.cookie);
+                } else {
+                    // @ts-ignore
+                    this.messages.toast = WRONG_FORMAT_ERROR;
+                    // @ts-ignore
+                    this.titles.toast = TITLE_WRONG_FORMAT;
+                    // @ts-ignore
+                    this.wrong = true;
                 }
             },
             async register(phone: string, pwd: string) {
@@ -119,6 +132,11 @@ import { setCookie } from '~/helpers/setCookie';
 
                 } catch(e: any) {
                     console.log(e.response.data.message);
+                    const message = e.response.data.message.join('. ');
+                    // @ts-ignore
+                    this.messages.toast = message;
+                    // @ts-ignore
+                    this.titles.toast = TITLE_WRONG_SERVER;
                     // @ts-ignore
                     this.wrong = true;
                 }
@@ -129,6 +147,14 @@ import { setCookie } from '~/helpers/setCookie';
             },
             passwordCheck(text: string): boolean {
                 if (text.length >= 8) {
+                    return true;
+                }
+
+                return false;
+            },
+            passwordRepeatCheck() {
+                // @ts-ignore
+                if (this.pwd === this.pwd_repeat) {
                     return true;
                 }
 
@@ -147,18 +173,14 @@ import { setCookie } from '~/helpers/setCookie';
                 // @ts-ignore
                 if (this.pwd === this.pwd_repeat) {
                     // @ts-ignore
-                    const res = !(this.phoneCheck(this.phone) && this.passwordCheck(this.pwd));
+                    const res = !(this.phoneCheck(this.phone) && this.passwordCheck(this.pwd) && this.passwordRepeatCheck());
                     // @ts-ignore
                     console.log(this.phone, this.pwd)
                     // @ts-ignore
-                    console.log(this.phoneCheck(this.phone), this.passwordCheck(this.pwd))
-                    // @ts-ignore
-                    this.wrong = res;
+                    console.log(this.phoneCheck(this.phone), this.passwordCheck(this.pwd));
                     // @ts-ignore
                     return res;
                 } else {
-                    // @ts-ignore
-                    this.wrong = true;
                     return true;
                 }
             },

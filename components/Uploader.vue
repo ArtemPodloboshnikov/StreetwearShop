@@ -29,11 +29,7 @@
 
 <script lang="ts">
     import { PropType } from 'vue';
-    // import { API_IMAGE_UPLOAD } from '@/constants/';
-    type DataFile = {
-        name: string,
-        src: string
-    }
+    import { DataFile, readFileAsDataURL } from '~/helpers/readFileAsDataURL';
 
     export default {
         props: {
@@ -55,7 +51,6 @@
             }
         },
         data: () => ({
-            files: [],
             data_files: [] as DataFile[]
         }),
         methods: {
@@ -63,32 +58,18 @@
                 // @ts-ignore
                 const files: FileList = event.dataTransfer.files as FileList;
                 // @ts-ignore
-                this.files = files;
-                // @ts-ignore
                 this.galaryHandler(files);
 
             },
             toggleClass(e: Event) {
                 // @ts-ignore
-                e.classList.add('.drag')
+                e.classList.add('drag')
             },
             handleInput(e: Event) {
                 // @ts-ignore
                 const files = (e.target as HTMLInputElement).files as FileList;
                 // @ts-ignore
-                this.files = files;
-                // @ts-ignore
                 this.galaryHandler(files)
-            },
-            async readFileAsDataURL(file: File) {
-                const result: DataFile = await new Promise((resolve) => {
-                    const fileReader = new FileReader();
-                    // @ts-ignore
-                    fileReader.onload = (e) => resolve({ name: file.name, src: e.target.result});
-                    fileReader.readAsDataURL(file);
-                });
-
-                return result;
             },
             async galaryHandler(files: FileList) {
                 const datas: DataFile[] = [];
@@ -99,7 +80,7 @@
                         continue;
                     }
                     // @ts-ignore
-                    datas.push(await this.readFileAsDataURL(file))
+                    datas.push(await readFileAsDataURL(file))
                     // @ts-ignore
                     if (!this.multiple || (i === this.limit - 1)) break
                 }
@@ -137,10 +118,6 @@
     input {
         display: none;
     }
-
-    label {
-        cursor: pointer;
-    }
     .drag {
         border: 4px solid var(--warn);
     }
@@ -152,6 +129,7 @@
         display: grid;
         justify-items: center;
         align-items: center;
+        cursor: pointer;
     }
 
     .galary {

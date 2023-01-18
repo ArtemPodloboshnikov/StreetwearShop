@@ -85,6 +85,7 @@
         TITLE_WRONG_EMPTY,
         API_CREATE_PRODUCT
      } from '@/constants/';
+     import { getValueFromInput } from '@/helpers/getValueFromInput';
 
      type Product = {
         description: string,
@@ -250,9 +251,8 @@
                 }
             },
             setState(stateName: string) {
-                const getValue = (e: any) => { return (e?.target?.value ? e?.target?.value : (Array.isArray(e) ? e : ''))}
                 // @ts-ignore
-                return (e: any) => this.$store.commit('admin/set', { name: stateName, value: getValue(e)})
+                return (e: any) => this.$store.commit('admin/set', { name: stateName, value: getValueFromInput(e)})
             },
             isFill(text: string) {
                 if(text !== '') {

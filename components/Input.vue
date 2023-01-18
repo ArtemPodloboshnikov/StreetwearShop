@@ -68,12 +68,17 @@
             required: {
                 type: Boolean,
                 default: false
+            },
+            defaultValue: {
+                type: String,
+                default: null
             }
         },
-        data: () => ({
+        // @ts-ignore
+        data: ({defaultValue}) => ({
             typeIcons,
             passwordOpen: false,
-            value: '',
+            value: defaultValue,
             isCheck: false
         }),
         methods: {
@@ -90,7 +95,7 @@
                     // @ts-ignore
                     this.isCheck = true;
                     // @ts-ignore
-                } else if (this.error(this.value) || this.value === '' || this.required) {
+                } else if (this.error(this.value) || this.value === '' || !this.required) {
                     // @ts-ignore
                     this.isCheck = false;
                 } else {

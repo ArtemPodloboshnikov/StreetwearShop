@@ -14,9 +14,6 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
-  ssr: true,
-  target: 'server',
-
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     'boxicons/css/boxicons.min.css',
@@ -34,6 +31,9 @@ export default {
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
   ],
+
+  ssr: true,
+  target: 'server',
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
