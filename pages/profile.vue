@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <Avatar :id="ids.avatar" class="avatar" :set="setState('avatar')"/>
+        <Avatar :id="ids.avatar" class="avatar" :set-file-list="setState('avatar')" :default-value="initialData.avatar"/>
         <form :ref="ids.form" class="base" @submit.prevent="updateUser">
             <Inputs :placeholder="placeholders.name" :set="setState('name')" icon="user" :default-value="initialData.name"/>
             <Inputs :placeholder="placeholders.phone" :set="setState('phone')" type="tel" :default-value="initialData.phone"/>
@@ -31,7 +31,8 @@
         FORM_USER_OPTIONS,
         API_USER_SELF,
         SUCCESS_SAVE,
-        TITLE_SAVE
+        TITLE_SAVE,
+        API_STATIC_FILE
     } from '@/constants/';
     import Avatar from '~/components/Avatar.vue';
     import Inputs from '~/components/Input.vue';
@@ -40,7 +41,7 @@
     import { formValidator } from '~/helpers/formValidator';
     import { deleteEmptyAttributes } from '@/helpers/deleteEmptyAttributes';
     import { getValueFromInput } from '@/helpers/getValueFromInput';
-    import { DataFile } from '~/helpers/readFileAsDataURL';
+    import { uploadFiles } from '~/helpers/uploadFiles';
 
     export default {
         components: { Avatar, Inputs, Toast },
@@ -54,11 +55,10 @@
 
             return true;
         },
+        // @ts-ignore
         async asyncData({$axios, app}) {
-            console.log(API_USER_SELF, getApiHeaders('self', app.$cookies.get(ACCESS_TOKEN_NAME)));
-            const response = await $axios.$get(API_USER_SELF, getApiHeaders('self', app.$cookies.get(ACCESS_TOKEN_NAME)));
-            console.log(response);
-
+            const response = await $axios.$get(API_USER_SELF, getApiHeaders(true, app.$cookies.get(ACCESS_TOKEN_NAME)));
+            response.avatar = `${API_STATIC_FILE}/${response.avatar}`
             return { initialData: response };
         },
         data: () => ({
@@ -87,7 +87,8 @@
                 name: '',
                 address: '',
                 flat: '',
-                phone: ''
+                phone: '',
+                avatar: ''
             }
         }),
         computed: {
@@ -107,9 +108,9 @@
                 // @ts-ignore
                 return this.$store.state.user.phone;
             },
-            avatar(): DataFile {
+            avatar(): FileList {
                 // @ts-ignore
-                return this.$store.state.user.avatar;
+                return this.$store.state.user.avatar[0];
             }
         },
         methods: {
@@ -127,19 +128,24 @@
                         flat: this.flat,
                         // @ts-ignore
                         phone: this.phone,
-                        // @ts-ignore
-                        avatar: this.avatar.name
-                } as object
-                console.log(user)
+                        avatar: ''
+                }
+
+                // @ts-ignore
+                if (this.avatar) {
+                    // @ts-ignore
+                    const filesResponse = await uploadFiles(this.$axios.$post, this.avatar, this.initialData.name || this.name);
+                    user.avatar = filesResponse[0].url;
+                }
+
                 if (formValidator(user, true)) {
                     // @ts-ignore
-                    const response: any = await this.$axios.patch(API_USER_UPDATE, deleteEmptyAttributes(user), getApiHeaders(ACCESS_TOKEN_NAME))
-
+                    const response: any = await this.$axios.patch(API_USER_UPDATE, deleteEmptyAttributes(user), getApiHeaders(true))
                     if (response.status === 200) {
                         // @ts-ignore
                         this.setToastOptions(true);
                     }
-                    console.log(response);
+
                 } else {
                     // @ts-ignore
                     this.setToastOptions(false);

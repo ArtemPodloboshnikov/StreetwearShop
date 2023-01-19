@@ -1,5 +1,5 @@
 const defaultState = () => ({
-    avatar: {},
+    avatar: undefined,
     name: '',
     phone: '',
     address: '',

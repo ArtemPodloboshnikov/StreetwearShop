@@ -1,7 +1,7 @@
 <template>
     <label
         v-bind="$attrs"
-        class="label"
+        :class="`label ${photo.src ? 'drag' : ''}`"
         :style="`background-image: url(${photo.src || ''})`"
         @drop.prevent="(e)=>previewFiles(e)"
         @dragenter.prevent
@@ -24,11 +24,20 @@
         props: {
             set: {
                 type: Function as PropType<(payload: DataFile[]) => void>,
+                default: undefined
+            },
+            setFileList: {
+                type: Function as PropType<(payload: FileList[]) => void>,
                 required: true
             },
+            defaultValue: {
+                type: String,
+                default: ''
+            }
         },
-        data: () => ({
-            photo: {} as DataFile
+        // @ts-ignore
+        data: ({defaultValue}) => ({
+            photo: {src: defaultValue, name: ''} as DataFile
         }),
         methods: {
             previewFiles(event: DragEvent) {
@@ -65,7 +74,12 @@
                     this.addDragClass(document.getElementById(this.$attrs.id));
                 }
                 // @ts-ignore
-                this.set(data);
+                if (this.set !== undefined) {
+                    // @ts-ignore
+                    this.set([data]);
+                }
+                // @ts-ignore
+                this.setFileList([files]);
             }
         },
     }

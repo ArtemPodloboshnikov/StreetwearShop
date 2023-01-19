@@ -1,5 +1,5 @@
 import { getCookie } from "./getCookie";
-import { BASE_ROUTE } from "~/constants";
+import { ACCESS_TOKEN_NAME, BASE_ROUTE } from "~/constants";
 
 const config = {
     'Content-Type': 'application/json',
@@ -7,17 +7,23 @@ const config = {
     'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
 }
 
+const filesConfig = {
+    'Content-Type': `multipart/form-data`
+}
+
 type Headers = {
     headers: typeof config | {'Authorization'?: string}
 }
 
-export function getApiHeaders(tokenName?: string, jwt?: string): Headers {
-    if (tokenName) {
-        return {
-            headers: {
+export function getApiHeaders(auth=false, jwt?: string, isFiles=false): Headers {
+    if (auth) {
+        const headers = {
                 ...config,
-                'Authorization': `Bearer ${jwt || getCookie(tokenName)}`
-            }
+                'Authorization': `Bearer ${jwt || getCookie(ACCESS_TOKEN_NAME)}`
+        }
+
+        return {
+            headers: isFiles ? {...headers, ...filesConfig} : {...headers}
         }
     } else {
         return {
