@@ -80,22 +80,30 @@
             isTable: {
                 type: Boolean,
                 default: true
+            },
+            genderDependent: {
+                type: String,
+                default: undefined
+            },
+            single: {
+                type: Boolean,
+                default: false
             }
         },
         // @ts-ignore
         data: ({$store, section}) => ({
-            active_sizes: [...$store.state[section].sizes],
+            active_sizes: [...$store.state[section].sizes] as string[],
             sizes_constant: SIZES,
             showTable: false,
         }),
         computed: {
             tables(): Table[] {
                 // @ts-ignore
-                if (TABLES_SIZES[this.$store.state.params.gender] === undefined) {
+                if (TABLES_SIZES[this.genderDependent] === undefined) {
                     return [...TABLES_SIZES[Gender.FEMALE], ...TABLES_SIZES[Gender.MALE]]
                 }
                 // @ts-ignore
-                return TABLES_SIZES[this.$store.state.params.gender];
+                return TABLES_SIZES[this.genderDependent];
             }
         },
         methods: {
@@ -105,13 +113,22 @@
                     // @ts-ignore
                     this.active_sizes.splice(this.active_sizes.indexOf(size), 1);
                     // @ts-ignore
-                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: size})
+                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: size});
                     // @ts-ignore
                 } else if (!this.active_sizes.includes(size)) {
                     // @ts-ignore
                     this.active_sizes.push(size);
                     // @ts-ignore
-                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value: this.active_sizes})
+                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value: this.active_sizes});
+                }
+                // @ts-ignore
+                if (this.single && this.active_sizes.length === 2) {
+                    // @ts-ignore
+                    const anotherSize = this.active_sizes.find(s => s !== size);
+                    // @ts-ignore
+                    this.active_sizes.splice(this.active_sizes.indexOf(anotherSize), 1);
+                    // @ts-ignore
+                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: anotherSize});
                 }
             },
             toggleTable() {

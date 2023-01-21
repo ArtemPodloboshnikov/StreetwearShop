@@ -3,14 +3,15 @@
         <div class="logo logo_top"></div>
         <div class="logo logo_left"></div>
         <form class="form" @submit.prevent="formHandler">
-            <Inputs :set="setState('login')" :placeholder="placeholders.phone" :error="phoneCheck" :message="messages.phone" type="tel" />
-            <Inputs :set="setState('password')" :placeholder="placeholders.password" :error="passwordCheck" :message="messages.password" type="password" />
-            <Inputs :set="setState('password_repeat')" :placeholder="placeholders.password_repeat" :error="passwordRepeatCheck" :message="messages.pwd_repeat" type="password" />
-            <button type="submit">{{ register_btn }}</button>
+            <Inputs :set="setState('login')" :placeholder="placeholders.phone" :error="checks.phoneCheck" :message="messages.phone" type="tel" />
+            <Inputs :set="setState('password')" :placeholder="placeholders.password" :error="checks.passwordCheck" :message="messages.password" type="password" />
+            <Inputs :set="setState('password_repeat')" :placeholder="placeholders.password_repeat" :error="()=>checks.passwordRepeatCheck(pwd, pwd_repeat)" :message="messages.pwd_repeat" type="password" />
+            <button type="submit">{{ button.text_register }}</button>
+            <nuxt-link :to="routes.login" class="link_rules">{{ button.text_login }}</nuxt-link>
         </form>
         <div class="logo logo_right"></div>
         <div class="logo logo_bottom"></div>
-        <Toast :title="titles.toast" :message="messages.toast" :show="wrong" :close="closeToast" />
+        <Toast :code="toastCode" :title="titles.toast" :message="messages.toast" :show="isToast" :close="closeToast" />
     </div>
 </template>
 
@@ -18,7 +19,7 @@
     import {
         API_ROUTE_REGISTET,
         REGISTER_BTN_TEXT,
-        TITLE_AUTH,
+        TITLE_PAGE_SIGNUP,
         DESCRIPTION_AUTH,
         KEYWORDS_AUTH,
         PHONE_PLACEHOLDER,
@@ -31,12 +32,19 @@
         TITLE_WRONG_FORMAT,
         TITLE_WRONG_SERVER,
         ACCESS_TOKEN_NAME,
-        PROFILE_ROUTE
+        PROFILE_ROUTE,
+        SIGNIN_ROUTE,
+        LIGIN_BTN_TEXT,
+TOAST_BAD_FORMAT
     } from '@/constants/';
 
     import Inputs from '~/components/Input.vue';
     import Toast from '~/components/Toast.vue';
+    import { phoneCheck } from '~/helpers/phoneCheck';
+    import { passwordCheck } from '~/helpers/passwordCheck';
+    import { passwordRepeatCheck } from '~/helpers/passwordRepeatCheck';
     import { setCookie } from '~/helpers/setCookie';
+import { getApiHeaders } from '~/helpers/getApiHeaders';
 
     type ResponseRegister = {
         access_token: string
@@ -46,7 +54,10 @@
         components: { Inputs, Toast },
         layout: 'empty',
         data: () => ({
-            register_btn: REGISTER_BTN_TEXT,
+            button: {
+                text_register: REGISTER_BTN_TEXT,
+                text_login: LIGIN_BTN_TEXT
+            },
             placeholders: {
                 phone: PHONE_PLACEHOLDER,
                 password: PASSWORD_PLACEHOLDER,
@@ -61,10 +72,19 @@
             titles: {
                 toast: TITLE_WRONG_FORMAT
             },
-            wrong: false
+            checks: {
+                passwordCheck,
+                passwordRepeatCheck,
+                phoneCheck
+            },
+            routes: {
+                login: SIGNIN_ROUTE
+            },
+            isToast: false,
+            toastCode: TOAST_BAD_FORMAT
         }),
         head: () => ({
-            title: TITLE_AUTH,
+            title: TITLE_PAGE_SIGNUP,
             meta: [
                 {
                     hid: DESCRIPTION_AUTH.name,
@@ -106,11 +126,7 @@
                     console.log(document.cookie);
                 } else {
                     // @ts-ignore
-                    this.messages.toast = WRONG_FORMAT_ERROR;
-                    // @ts-ignore
-                    this.titles.toast = TITLE_WRONG_FORMAT;
-                    // @ts-ignore
-                    this.wrong = true;
+                    this.isToast = true;
                 }
             },
             async register(phone: string, pwd: string) {
@@ -121,13 +137,8 @@
                         phone,
                         pwd
                     },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': 'http://localhost:8080',
-                            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-                        }
-                    });
+                    getApiHeaders()
+                    );
                     return response;
 
                 } catch(e: any) {
@@ -138,46 +149,22 @@
                     // @ts-ignore
                     this.titles.toast = TITLE_WRONG_SERVER;
                     // @ts-ignore
-                    this.wrong = true;
+                    this.isToast = true;
                 }
             },
             setState(stateName: string) {
                 // @ts-ignore
                 return (e: any) => this.$store.commit('authorization/set', { name: stateName, value: e?.target?.value})
             },
-            passwordCheck(text: string): boolean {
-                if (text.length >= 8) {
-                    return true;
-                }
-
-                return false;
-            },
-            passwordRepeatCheck() {
-                // @ts-ignore
-                if (this.pwd === this.pwd_repeat) {
-                    return true;
-                }
-
-                return false;
-            },
-            phoneCheck(text: string): boolean {
-                const regexp = /^[\d\\+][\d\\(\\)\\ -]{4,14}\d$/;
-                if (regexp.test(text)) {
-                    return true;
-                }
-
-                return false;
-
-            },
             isWrong(): boolean {
                 // @ts-ignore
-                if (this.pwd === this.pwd_repeat) {
+                if (passwordRepeatCheck(this.pwd, this.pwd_repeat)) {
                     // @ts-ignore
-                    const res = !(this.phoneCheck(this.phone) && this.passwordCheck(this.pwd) && this.passwordRepeatCheck());
+                    const res = !(phoneCheck(this.phone) && passwordCheck(this.pwd) && passwordRepeatCheck(this.pwd, this.pwd_repeat));
                     // @ts-ignore
                     console.log(this.phone, this.pwd)
                     // @ts-ignore
-                    console.log(this.phoneCheck(this.phone), this.passwordCheck(this.pwd));
+                    console.log(phoneCheck(this.phone), passwordCheck(this.pwd));
                     // @ts-ignore
                     return res;
                 } else {
@@ -186,51 +173,12 @@
             },
             closeToast() {
                 // @ts-ignore
-                this.wrong = false;
+                this.isToast = false;
             }
         }
     }
 </script>
 
 <style scoped>
-    .layout {
-        display: grid;
-        grid-template-columns: 20% 60% 20%;
-        grid-template-rows: 20% 60% 20%;
-        grid-template-areas: ". logo_t ."
-                            "logo_l form logo_r"
-                            ". logo_b .";
-        height: 100%;
-    }
-
-    .logo {
-        width: 100%;
-        height: 100%;
-        background-color: var(--danger);
-    }
-
-    .logo_top {
-        grid-area: logo_t;
-    }
-
-    .logo_left {
-        grid-area: logo_l;
-    }
-
-    .logo_right {
-        grid-area: logo_r;
-    }
-
-    .logo_bottom {
-        grid-area: logo_b;
-    }
-
-    .form {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        grid-area: form;
-        gap: 3%;
-    }
+    @import 'assets/authorization.css';
 </style>

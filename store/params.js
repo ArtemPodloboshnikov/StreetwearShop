@@ -5,10 +5,12 @@ export const state = () => ({
 })
 
 export const mutations = {
-    set(state, { name, value }) {
+    set(state, { name, value, keyObject=null }) {
         if (Array.isArray(state[name])) {
             state[name] = [];
             value.forEach(v => state[name].push(v))
+        } else if(keyObject) {
+            state[name][keyObject] = value;
         } else {
             state[name] = value
         }

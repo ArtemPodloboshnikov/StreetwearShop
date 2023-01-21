@@ -132,7 +132,7 @@ export const TABLES_SIZES = {
 }
 
 // root
-export const DATA_IMAGES = [
+export const ROOT_DATA_IMAGES = [
     {
         src: '/root/sneakers.avif',
         alt: 'Обувь',
@@ -368,3 +368,8 @@ export const BRANDS = {
         'HUF WORLDWIDE'
     ]
 }
+
+export const TOAST_BAD_FORMAT = 'bad_format';
+export const TOAST_EMPTY_FIELDS = 'empty_fields';
+export const TOAST_SAVE_DATA = 'save_data';
+export const TOAST_UNSAVE_DATA = 'unsave_data';

@@ -5,39 +5,53 @@
                 <div class="content">
                     <div class="inputs_card">
                         <Inputs :set="setState('model')" :placeholder="placeholders.model" icon="package" :required="true" />
-                        <!-- <Inputs :set="setState('brand')" :placeholder="placeholders.brand" /> -->
                         <Selects :placeholder="placeholders.brand" :set="setState('brand')" :options="brands" icon="badge-check"/>
                         <Inputs type="number" :set="setState('price')" :placeholder="placeholders.price" icon="ruble" :required="true" />
-                        <Uploader :id="ids.card_photo" :set="setState('card')" :placeholder="placeholders.preview" />
+                        <Uploader :id="ids.card_photo" :set="setState('card')" :set-file-list="setState('cards')" :placeholder="placeholders.preview" />
                         <button @click="()=> {preview = isFillCard()}">{{ buttons.show_card }}</button>
                     </div>
                     <div v-if="preview" class="preview">
-                        <Card :brand="brand" :model="model" :price="price" :src="card[0].src" :alt="card[0].name" />
+                        <Card :brand="brand" :model="model" :price="price" :src="card.src" :alt="card.name" />
                     </div>
-                    <button class="send" @click="isFillFields">
-                        {{ buttons.send_data }}
-                    </button>
+                    <div class="send">
+                        <button @click="isFillFields">
+                            {{ buttons.update_data }}
+                        </button>
+                        <div class="separate"></div>
+                        <button @click="isFillFields">
+                            {{ buttons.send_data }}
+                        </button>
+                    </div>
                 </div>
             </template>
             <template #second>
                 <div class="content">
                     <div class="inputs_other">
-                        <Textareas :placeholder="placeholders.description" :set="()=>setState('description')" />
-                        <!-- <Inputs :set="setState('material')" :placeholder="placeholders.material" icon="bookmark-alt" /> -->
+                        <Selects :set="setState('code')" :placeholder="placeholders.code" icon="barcode" :required="true" :options="initialData" like-input/>
                         <Selects :placeholder="placeholders.material" :set="setState('material')" :options="materials" icon="bookmark-alt"/>
                         <Selects :placeholder="placeholders.country" :set="setState('country')" :options="countries" icon="flag"/>
-                        <!-- <Inputs :set="setState('country')" :placeholder="placeholders.country" icon="flag" /> -->
-                        <Uploader :id="ids.product_photos" :multiple="true" :set="setState('photos')" :placeholder="placeholders.photos" />
+                        <Uploader :id="ids.product_photos" :multiple="true" :set-file-list="setState('photos')" :placeholder="placeholders.photos" />
                     </div>
-                    <Sizes section="admin" class="sizes" :sizes="SIZES" />
+                    <div class="sizes">
+                        <Sizes section="admin" :sizes="SIZES" :gender-dependent="gender" single />
+                        <Inputs :set="setObjectState('count', size)" :placeholder="`${placeholders.count} '${size}'`" icon="bx bxs-component" />
+                        <ColorPicker section="admin" />
+                    </div>
                     <div class="selects">
                         <Genders section="admin" />
                         <Selects :placeholder="placeholders.category" :set="setState('category')" :options="Object.keys(categories[gender])" />
                         <Selects :placeholder="placeholders.subcategory" :set="setState('subcategory')" :options="categories[gender][category] || []" />
+                        <Textareas class="textarea" :placeholder="placeholders.description" :set="setState('description')" />
                     </div>
-                    <button class="send" @click="isFillFields">
-                        {{ buttons.send_data }}
-                    </button>
+                    <div class="send">
+                        <button @click="isFillFields">
+                            {{ buttons.update_data }}
+                        </button>
+                        <div class="separate"></div>
+                        <button @click="isFillFields">
+                            {{ buttons.send_data }}
+                        </button>
+                    </div>
                 </div>
             </template>
             <template #third>
@@ -46,11 +60,12 @@
                 </div>
             </template>
         </Tabs>
-        <Toast :title="title_toast" :message="messages.empty_field" :show="showToast" :close="closeToast" />
+        <Toast :code="toastCode" :show="isToast" :close="closeToast" :message="product_save_mes" :extend="!!product_save_mes" />
     </div>
 </template>
 
 <script lang="ts">
+    import { slugify } from 'transliteration';
     import Inputs from '@/components/Input.vue';
     import Card from '@/components/Card.vue';
     import Tabs from '@/components/Tabs.vue';
@@ -60,6 +75,7 @@
     import Selects from '~/components/Select.vue';
     import Genders from '~/components/Gender.vue';
     import Toast from '~/components/Toast.vue';
+    import ColorPicker from '~/components/ColorPicker.vue';
     import {
         MODEL_PLACEHOLDER,
         BRAND_PLACEHOLDER,
@@ -80,12 +96,23 @@
         COUNTRIES,
         BRANDS,
         SHOW_CARD_BTN,
-        SEND_DATA_BTN,
-        EMPTY_FIELD_MESSAGE,
-        TITLE_WRONG_EMPTY,
-        API_CREATE_PRODUCT
+        ADD_DATA_BTN,
+        UPDATE_DATA_BTN,
+        API_CREATE_PRODUCT,
+        TOAST_EMPTY_FIELDS,
+        PRODUCT_CODE_PLACEHOLDER,
+        COUNT_SIZES_PLACEHOLDER,
+        TOAST_SAVE_DATA,
+        ROOT_DATA_IMAGES,
+        CATEGORIES_BY_LINK,
+        TOAST_UNSAVE_DATA
      } from '@/constants/';
-     import { getValueFromInput } from '@/helpers/getValueFromInput';
+
+    import { getValueFromInput } from '@/helpers/getValueFromInput';
+    import { getApiHeaders } from '~/helpers/getApiHeaders';
+    import { formValidator } from '~/helpers/formValidator';
+    import { DataFile } from '~/helpers/readFileAsDataURL';
+    import { uploadFiles } from '~/helpers/uploadFiles';
 
      type Product = {
         description: string,
@@ -96,9 +123,11 @@
         sizes: string[],
         colors: string[],
         model: string,
+        brand: string,
         price: number,
-        images: string[],
-        gender: Gender
+        images: FileList,
+        gender: Gender,
+        code: string
      }
 
     export default {
@@ -111,7 +140,8 @@
             Sizes,
             Selects,
             Genders,
-            Toast
+            Toast,
+            ColorPicker
         },
         layout: 'sidebar-only',
         data: () => ({
@@ -125,7 +155,9 @@
                 material: MATERIAL_PLACEHOLDER,
                 photos: PHOTOS_PLACEHOLDER,
                 category: CATEGORY_PLACEHOLDER,
-                subcategory: SUBCATEGORY_PLACEHOLDER
+                subcategory: SUBCATEGORY_PLACEHOLDER,
+                code: PRODUCT_CODE_PLACEHOLDER,
+                count: COUNT_SIZES_PLACEHOLDER
             },
             ids: {
                 card_photo: CARD_PHOTO_ID,
@@ -133,12 +165,9 @@
             },
             buttons: {
                 show_card: SHOW_CARD_BTN,
-                send_data: SEND_DATA_BTN
+                send_data: ADD_DATA_BTN,
+                update_data: UPDATE_DATA_BTN
             },
-            messages: {
-                empty_field: EMPTY_FIELD_MESSAGE
-            },
-            title_toast: TITLE_WRONG_EMPTY,
             preview: false,
             tabs: ['Карточка', 'Страница', 'Категории'],
             SIZES,
@@ -146,8 +175,11 @@
             materials: MATERIALS,
             countries: COUNTRIES,
             brands: BRANDS,
-            showToast: false,
-            send_disabled: false
+            isToast: false,
+            toastCode: TOAST_EMPTY_FIELDS,
+            send_disabled: false,
+            initialData: ['cool12'],
+            product_save_mes: ''
         }),
         computed: {
             brand(): string {
@@ -162,11 +194,19 @@
                 // @ts-ignore
                 return Number(this.$store.state.admin.price);
             },
-            card(): [{ name: string, src: string }] {
+            count(): {[key: string]: number} {
                 // @ts-ignore
-                return this.$store.state.admin.card;
+                return this.$store.state.admin.count;
             },
-            photos(): [{ name: string, src: string }] {
+            card(): DataFile {
+                // @ts-ignore
+                return this.$store.state.admin.card[0];
+            },
+            cards(): File[] {
+                // @ts-ignore
+                return this.$store.state.admin.cards;
+            },
+            photos(): File[] {
                 // @ts-ignore
                 return this.$store.state.admin.photos;
             },
@@ -198,21 +238,29 @@
                 // @ts-ignore
                 return this.$store.state.admin.colors;
             },
-            sizes(): string[] {
+            size(): string {
                 // @ts-ignore
-                return this.$store.state.admin.sizes;
-            }
+                return this.$store.state.admin.sizes[0];
+            },
+            code(): string {
+                // @ts-ignore
+                return this.$store.state.admin.code;
+            },
         },
         methods: {
             isFillCard() {
                 // @ts-ignore
-                if (this.model && this.brand && this.price && this.card.length) {
+                if (this.model && this.brand && this.price && this.card) {
                     return true;
                 } else {
                     return false;
                 }
             },
             async isFillFields() {
+                const dt = new DataTransfer();
+                // @ts-ignore
+                [...this.cards, ...this.photos].forEach(file => dt.items.add(file))
+
                 const product: Product = {
                     // @ts-ignore
                     description: this.description,
@@ -225,34 +273,51 @@
                     // @ts-ignore
                     country: this.country,
                     // @ts-ignore
-                    sizes: this.sizes,
+                    sizes: this.count,
                     // @ts-ignore
                     model: this.model,
                     // @ts-ignore
+                    brand: this.brand,
+                    // @ts-ignore
                     price: this.price,
                     // @ts-ignore
-                    images: [`${this.card[0].src}.avif`, ...this.photos.map(photo => `${photo.src}.avif`)],
+                    images: dt.files,
                     // @ts-ignore
                     gender: this.gender,
                     // @ts-ignore
-                    colors: this.colors
+                    colors: this.colors,
+                    // @ts-ignore
+                    code: this.code
                 }
                 // @ts-ignore
-                if (this.isFillCard() && product.description &&
-                    product.category && product.subcategory &&
-                    product.material && product.country && product.sizes &&
-                    product.images.length > 1) {
+                if (this.isFillCard() && formValidator(product)) {
                         // @ts-ignore
                         const response = await this.createProduct(product);
                         console.log(response);
+                        // @ts-ignore
+                        const acronym = slugify(`${response.model}-${response._id}`, { lowercase: true });
+                        const category = ROOT_DATA_IMAGES.find(img => img.alt === response.category)!.to;
+                        const indexSubcategoryLink = CATEGORIES_BY_LINK[category].titles.indexOf(response.subcategory.toLowerCase());
+                        const subcategory = CATEGORIES_BY_LINK[category].tos[indexSubcategoryLink];
+                        // @ts-ignore
+                        this.product_save_mes = `Вы можете увидеть страницу товара по ссылке localhost:3000${category}${subcategory}/${acronym}`;
+
                 } else {
                     // @ts-ignore
-                    this.showToast = true;
+                    this.isToast = true;
+                    // @ts-ignore
+                    this.toastCode = TOAST_EMPTY_FIELDS;
+                    // @ts-ignore
+                    this.product_save_mes = '';
                 }
             },
             setState(stateName: string) {
                 // @ts-ignore
                 return (e: any) => this.$store.commit('admin/set', { name: stateName, value: getValueFromInput(e)})
+            },
+            setObjectState(stateName: string, key: string) {
+                // @ts-ignore
+                return (e: any) => this.$store.commit('admin/set', { name: stateName, value: getValueFromInput(e), keyObject: key})
             },
             isFill(text: string) {
                 if(text !== '') {
@@ -262,26 +327,30 @@
             },
             closeToast() {
                 // @ts-ignore
-                this.showToast = false;
+                this.isToast = false;
             },
-            async createProduct(product: Product) {
+            async createProduct(product: Product): Promise<any> {
                 try {
+                    console.log(product)
                     // @ts-ignore
-                    const response: any = await this.$axios.$post(API_CREATE_PRODUCT,
-                    {
-                        product
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': 'http://localhost:8080',
-                            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-                        }
-                    });
-                    return response;
+                    const files = await uploadFiles(this.$axios.$post, product.images, `${this.brand}_${this.model}`)
+                    // @ts-ignore
+                    const newProduct = {...product, images: files.map(file => file.url)};
+                    // @ts-ignore
+                    const response = await this.$axios.post(API_CREATE_PRODUCT, newProduct, getApiHeaders(true));
+                    // @ts-ignore
+                    this.isToast = true;
+                    // @ts-ignore
+                    this.toastCode = TOAST_SAVE_DATA;
+                    return response.data;
 
                 } catch(e: any) {
-                    console.log(e.response.data.message)
+                    // @ts-ignore
+                    this.isToast = true;
+                    // @ts-ignore
+                    this.toastCode = TOAST_UNSAVE_DATA;
+                    // @ts-ignore
+                    this.product_save_mes = e.response.data.message;
                 }
             }
         }
@@ -326,6 +395,9 @@
     .sizes {
         grid-column: 5 / 9;
         margin-top: 14%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .selects {
@@ -334,7 +406,19 @@
 
     .send {
         grid-column: 1 / 13;
+        display: grid;
+        grid-template-columns: 1fr 4px 1fr;
         height: 100%;
         color: var(--danger);
+        width: 100%;
+    }
+
+    .send > .separate {
+        height: 101%;
+        background: var(--dark);
+    }
+
+    .textarea {
+        height: 300px;
     }
 </style>

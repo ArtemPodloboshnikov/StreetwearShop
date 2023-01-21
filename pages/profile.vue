@@ -9,7 +9,7 @@
             <Inputs :placeholder="placeholders.password" :set="setState('password')" type="password"/>
             <button type="submit">{{ text.save }}</button>
         </form>
-        <Toast :show="isToast" :title="titles.toast" :message="messages.toast" :close="closeToast" />
+        <Toast :show="isToast" :code="toastCode" :close="closeToast" />
     </div>
 </template>
 
@@ -17,7 +17,7 @@
     import { NuxtAppOptions } from '@nuxt/types';
     import {
         ACCESS_TOKEN_NAME,
-        AUTHORIZATION_ROUTE,
+        SIGNIN_ROUTE,
         AVATAR_PHOTO_ID,
         PASSWORD_PLACEHOLDER,
         ADDRESS_PLACEHOLDER,
@@ -26,13 +26,11 @@
         USER_NAME_PLACEHOLDER,
         SAVE_TEXT_BTN,
         API_USER_UPDATE,
-        TITLE_WRONG_EMPTY,
-        EMPTY_FIELD_MESSAGE,
         FORM_USER_OPTIONS,
         API_USER_SELF,
-        SUCCESS_SAVE,
-        TITLE_SAVE,
-        API_STATIC_FILE
+        API_STATIC_FILE,
+        TOAST_EMPTY_FIELDS,
+TOAST_SAVE_DATA
     } from '@/constants/';
     import Avatar from '~/components/Avatar.vue';
     import Inputs from '~/components/Input.vue';
@@ -49,7 +47,7 @@
         validate({ app }: { app: NuxtAppOptions}) {
             const token = app.$cookies.get(ACCESS_TOKEN_NAME);
             if (!token) {
-                app.router?.push(AUTHORIZATION_ROUTE);
+                app.router?.push(SIGNIN_ROUTE);
                 return false;
             }
 
@@ -77,12 +75,7 @@
                 save: SAVE_TEXT_BTN
             },
             isToast: false,
-            titles: {
-                toast: TITLE_WRONG_EMPTY
-            },
-            messages: {
-                toast: EMPTY_FIELD_MESSAGE
-            },
+            toastCode: TOAST_EMPTY_FIELDS,
             initialData: {
                 name: '',
                 address: '',
@@ -160,14 +153,10 @@
                 this.isToast = true;
                 if (isSuccess) {
                     // @ts-ignore
-                    this.messages.toast = SUCCESS_SAVE;
-                    // @ts-ignore
-                    this.titles.toast = TITLE_SAVE;
+                    this.toastCode = TOAST_SAVE_DATA;
                 } else {
                     // @ts-ignore
-                    this.messages.toast = EMPTY_FIELD_MESSAGE;
-                    // @ts-ignore
-                    this.titles.toast = TITLE_WRONG_EMPTY;
+                    this.toastCode = TOAST_EMPTY_FIELDS;
                 }
             }
         }

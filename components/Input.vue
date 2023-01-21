@@ -11,8 +11,8 @@
             @blur="checkActivate"
             />
             <i
-            :class="`bx bx-${passwordOpen ? 'lock-open-alt' : (icon ? icon : typeIcons[type])}`"
-            @click="togglePassword"></i>
+            :class="`bx bx-${passwordOpen ? 'lock-open-alt' : (icon ? icon : typeIcons[type])} ${postfix ? 'iconText' : ''}`"
+            @click="togglePassword">{{ postfix }}</i>
         </div>
         <div v-if="!error(value) && isCheck" class="hint">
             {{ message }}
@@ -71,7 +71,11 @@
             },
             defaultValue: {
                 type: String,
-                default: null
+                default: ''
+            },
+            postfix: {
+                type: String,
+                default: ''
             }
         },
         // @ts-ignore
@@ -90,7 +94,7 @@
                 }
             },
             checkActivate() {
-                    // @ts-ignore
+                // @ts-ignore
                 if (this.required && this.value === '') {
                     // @ts-ignore
                     this.isCheck = true;
@@ -152,5 +156,9 @@
 
     .hint {
         color: var(--danger);
+    }
+
+    .iconText {
+        font-family: 'Ordina-Medium' !important;
     }
 </style>

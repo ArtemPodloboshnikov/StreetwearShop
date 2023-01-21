@@ -1,3 +1,5 @@
+import { mutations as paramsMutations } from "./params";
+
 const defaultState = () => ({
     avatar: undefined,
     name: '',
@@ -9,19 +11,7 @@ const defaultState = () => ({
 
 export const state = defaultState()
 
-export const mutations = {
-    set(state, { name, value }) {
-        if (Array.isArray(state[name])) {
-            state[name] = [];
-            value.forEach(v => state[name].push(v))
-        } else {
-            state[name] = value
-        }
-    },
-    remove(state, {name, value}) {
-        state[name].splice(state[name].indexOf(value), 1)
-    }
-}
+export const mutations = {...paramsMutations}
 
 export const getters = {
     default() {

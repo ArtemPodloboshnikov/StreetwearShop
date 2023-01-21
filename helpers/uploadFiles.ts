@@ -12,8 +12,10 @@ export async function uploadFiles(
     folderName: string,
     apiRoute=API_FILES_UPLOAD) {
     const formData = new FormData();
-    formData.append('files', files[0], files[0].name);
-    formData.append('folder', folderName)
+    for (let i=0; i < files.length; i++) {
+        formData.append(`files`, files[i]);
+    }
+    formData.append('folder', folderName);
 
     return await func(apiRoute, formData, getApiHeaders(true, '', true));
 }

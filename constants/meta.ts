@@ -1,5 +1,5 @@
-// authorization
-export const TITLE_AUTH = 'Авторизация';
+// signup
+export const TITLE_PAGE_SIGNUP = 'Регистрация';
 export const DESCRIPTION_AUTH = {
     text: 'Войдите в систему',
     name: 'description'

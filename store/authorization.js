@@ -1,11 +1,9 @@
+import { mutations as paramsMutations } from "./params";
+
 export const state = () => ({
     login: '',
     password: '',
     password_repeat: ''
 })
 
-export const mutations = {
-    set(state, { name, value }) {
-            state[name] = value
-    }
-}
+export const mutations = {...paramsMutations}

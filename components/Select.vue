@@ -5,6 +5,8 @@
             :value="value"
             :placeholder="placeholder"
             @focus="toggleOptions"
+            @input="inputHandler"
+            @blur="likeInput ? blurHandler() : undefined"
             />
             <i :class="`bx bx-${ icon }`"></i>
         </div>
@@ -77,6 +79,10 @@
             message: {
                 type: String,
                 default: 'Зыберите значение'
+            },
+            likeInput: {
+                type: Boolean,
+                default: false
             }
         },
         data: () => ({
@@ -87,7 +93,10 @@
         methods: {
             toggleOptions(e: any) {
                 // @ts-ignore
-                e.target.blur()
+                if (!this.likeInput) {
+                    // @ts-ignore
+                    e.target.blur()
+                }
                 // @ts-ignore
                 if (this.show_options) {
                     // @ts-ignore
@@ -99,6 +108,16 @@
                     this.show_options = true;
                 }
 
+            },
+            blurHandler() {
+                // @ts-ignore
+                setTimeout(()=>{ this.show_options = false; }, 100)
+            },
+            inputHandler(e: Event) {
+                // @ts-ignore
+                this.value = e.target.value;
+                // @ts-ignore
+                this.set(e);
             },
             clickOption(option: string) {
                 // @ts-ignore
@@ -116,8 +135,6 @@
                 this.error = false;
             },
             isError() {
-                // @ts-ignore
-                console.log(this.error)
                 // @ts-ignore
                 if (this.value === '') {
                     // @ts-ignore

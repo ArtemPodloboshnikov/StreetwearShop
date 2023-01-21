@@ -17,14 +17,14 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { DATA_IMAGES } from '@/constants/';
+import { ROOT_DATA_IMAGES } from '@/constants/';
 
 export default Vue.extend({
   name: 'IndexPage',
+  layout: 'sidebar-only',
   data: () => ({
-    images: DATA_IMAGES
-  }),
-  layout: 'sidebar-only'
+    images: ROOT_DATA_IMAGES
+  })
 })
 </script>
 

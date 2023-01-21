@@ -8,7 +8,7 @@ const config = {
 }
 
 const filesConfig = {
-    'Content-Type': `multipart/form-data`
+    'Content-Type': `multipart/form-data;charset=utf-8`
 }
 
 type Headers = {

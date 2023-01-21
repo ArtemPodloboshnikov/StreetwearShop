@@ -1,7 +1,7 @@
 <template>
-    <div :class="`wrap ${$attrs.class}`">
+    <div class="wrap">
         <i :class="`bx bx-${ icon }`"></i>
-        <textarea :placeholder="placeholder" @input="(e)=>set(e)"></textarea>
+        <textarea :class="`${$attrs.class}`" :placeholder="placeholder" @input="(e)=>set(e)"></textarea>
     </div>
 </template>
 
@@ -29,7 +29,7 @@
 <style scoped>
     .wrap {
         display: grid;
-        grid-template-rows: 1fr 2fr;
+        grid-template-rows: 40px 1fr;
     }
 
     .wrap > i {

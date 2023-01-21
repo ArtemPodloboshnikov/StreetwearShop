@@ -3,12 +3,12 @@
     <div class="products">
        <Card
         v-for="product in products.slice(0, 5)"
-        :key="product.id"
-        brand="Supreme"
-        :model="product.title"
+        :key="product._id"
+        :brand="product.brand"
+        :model="product.model"
         :price="500"
         :src="product.url"
-        :alt="product.title"
+        :alt="product.model"
         />
     </div>
     <Paginator class="paginator" :pages="pages" :limit="14"/>
@@ -22,12 +22,12 @@
     <div class="products">
        <Card
         v-for="product in products.slice(5, 10)"
-        :key="product.id"
-        :brand="$route.params.category"
-        :model="product.title"
+        :key="product._id"
+        :brand="product.brand"
+        :model="product.model"
         :price="500"
         :src="product.url"
-        :alt="product.title"
+        :alt="product.model"
         />
     </div>
   </div>
@@ -35,20 +35,27 @@
 
 <script lang="ts">
     // eslint-disable-next-line import/named
-    import { NuxtAxiosInstance } from '@nuxtjs/axios';
-    // eslint-disable-next-line import/named
     import { Dictionary } from 'vue-router/types/router';
-    import { API_GET, COMPANY_NAME, NAVBAR_OPTIONS, CATEGORIES_BY_LINK } from '@/constants/';
+    import { COMPANY_NAME, NAVBAR_OPTIONS, CATEGORIES_BY_LINK, API_PRODUCT_FIND, Colors, Gender } from '@/constants/';
     import { matchPaths } from '@/helpers/matchPaths';
     import Card from '~/components/Card.vue';
     import Paginator from '~/components/Paginator.vue';
+    import { getApiHeaders } from '~/helpers/getApiHeaders';
 
     export type Product = {
-      albumId: number,
-      id: number,
-      title: string,
-      url: string,
-      thumbnailUrl: string
+      _id: string,
+      code: string,
+      images: string[],
+      brand: string,
+      model: string,
+      material: string,
+      country: string,
+      category: string,
+      subcategory: string,
+      gender: Gender,
+      price: number,
+      colors: Colors[],
+      sizes: string[]
     }
 
     const pages = new Array(100).fill(1).map((_, i) => { return i+1})
@@ -63,9 +70,15 @@
             const accessPaths = [...CATEGORIES_BY_LINK[category].tos];
             return matchPaths(subcategory, accessPaths);
         },
-        async asyncData({ $axios }: {$axios: NuxtAxiosInstance}) {
-            const products: Product[] = await $axios.$get(API_GET);
-            return { products: products.slice(0, 10) }
+        // @ts-ignore
+        async asyncData({ $axios, route}) {
+            const products: Product[] = await $axios.$post(API_PRODUCT_FIND,
+            {
+              category: route.params.category,
+              subcategory: route.params.subcategory
+            },
+            getApiHeaders());
+            return { products }
         },
         data: () => ({
             products: [{}] as Product[],

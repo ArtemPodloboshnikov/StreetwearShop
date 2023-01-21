@@ -43,6 +43,10 @@
             },
             set: {
                 type: Function as PropType<(payload: DataFile[]) => void>,
+                default: undefined
+            },
+            setFileList: {
+                type: Function as PropType<(payload: FileList[]) => void>,
                 required: true
             },
             limit: {
@@ -87,29 +91,13 @@
                 // @ts-ignore
                 this.data_files = datas;
                 // @ts-ignore
-                this.set(datas);
+                if (this.set) {
+                    // @ts-ignore
+                    this.set(datas);
+                }
+                // @ts-ignore
+                this.setFileList(Array.from(files).slice(0, this.limit))
             }
-            // async loadFile(event: Event) {
-            //     const data = new FormData();
-            //     data.append('name', 'my-picture');
-            //     // @ts-ignore
-            //     data.append('file', event.target.files[0]);
-            //     // @ts-ignore
-            //     const response = await this.$axios.$post(
-            //         API_IMAGE_UPLOAD,
-            //         data,
-            //         {
-            //             headers: {
-            //                 'Accept': 'application/json',
-            //                 'Content-Type' : 'multipart/form-data;',
-
-            //             }
-            //         }
-            //     )
-
-            //     console.log(response)
-            // }
-
         },
     }
 </script>
@@ -130,6 +118,10 @@
         justify-items: center;
         align-items: center;
         cursor: pointer;
+    }
+
+    .label p {
+        text-align: center;
     }
 
     .galary {
