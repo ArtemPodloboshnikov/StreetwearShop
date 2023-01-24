@@ -35,6 +35,10 @@
             section: {
                 type: String,
                 required: true
+            },
+            single: {
+                type: Boolean,
+                default: false
             }
         },
         // @ts-ignore
@@ -61,6 +65,16 @@
                     this.active.push(color.hex);
                     // @ts-ignore
                     this.$store.commit(`${this.section}/set`, { name: 'colors', value: [...colors, color.text] });
+                }
+
+                // @ts-ignore
+                if (this.single && this.active.length === 2) {
+                    // @ts-ignore
+                    const anotherColor: string = this.active.find(c => c !== color.hex);
+                    // @ts-ignore
+                    this.active.splice(this.active.indexOf(anotherColor), 1);
+                    // @ts-ignore
+                    this.$store.commit(`${this.section}/remove`, { name: 'colors', value: COLORS.find(c => c.hex === anotherColor)!.text});
                 }
             },
             showColors() {

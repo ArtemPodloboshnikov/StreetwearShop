@@ -9,7 +9,7 @@
             </div>
             <div class="hr" />
             <div class="message">
-                <p>{{ (extend ? (`${settings[code].message} ${message}`) : (message || settings[code].message)) }}</p>
+                <p>{{ (extend ? ($md.render(`${settings[code].message} ${message}`)) : (message || settings[code].message)) }}</p>
             </div>
         </div>
     </transition>

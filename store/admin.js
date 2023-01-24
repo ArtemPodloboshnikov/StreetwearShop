@@ -4,7 +4,7 @@ export const state = () => ({
     brand: '',
     model: '',
     price: 1,
-    code: '',
+    codes: {},
     description: '',
     material: '',
     country: '',
@@ -13,7 +13,7 @@ export const state = () => ({
     subcategory: '',
     card: [],
     cards: [],
-    count: {},
+    count_sizes: {},
     photos: [],
     sizes: ['XS'],
     colors: ['чёрный']

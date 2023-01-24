@@ -15,7 +15,11 @@ export const mutations = {
             state[name] = value
         }
     },
-    remove(state, {name, value}) {
-        state[name].splice(state[name].indexOf(value), 1)
+    remove(state, {name, value, keyObject=null}) {
+        if (keyObject) {
+            delete state[name][keyObject];
+        } else {
+            state[name].splice(state[name].indexOf(value), 1)
+        }
     }
 }

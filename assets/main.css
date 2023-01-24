@@ -100,5 +100,11 @@ textarea::placeholder {
 }
 
 .link_rules {
-    color: var(--warn);
+    text-decoration: none;
+    border-bottom: 3px solid var(--warn);
+    color: var(--primary);
+    height: fit-content;
+    width: fit-content;
+    font-family: 'Ordina-Regular';
+    font-size: 20px;
 }

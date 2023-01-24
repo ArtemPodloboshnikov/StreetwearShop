@@ -10,3 +10,5 @@ export const SIGNIN_ROUTE = '/signin';
 export const PROFILE_ROUTE = '/profile';
 
 export const CART_ROUTE = '/cart';
+
+export const TERMS_RETURN = '/faq#terms_return';

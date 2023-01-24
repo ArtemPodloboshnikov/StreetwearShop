@@ -62,7 +62,7 @@
 
 <style scoped>
     .tabs {
-      border: 1px solid #e0e0e0;
+      border: 5px solid var(--dark);
       width: 100%;
       display: grid;
       grid-template-rows: 5% 95%;
@@ -72,30 +72,30 @@
       display: flex;
       flex-wrap: wrap;
       list-style-type: none;
-      background: #fafafa;
+      background: var(--dark);
       margin: 0;
-      border-bottom: 1px solid #e0e0e0;
     }
 
     .tabs__btn {
       padding: 0.5rem 0.75rem;
       text-decoration: none;
-      color: black;
+      color: var(--primary);
       text-align: center;
       flex-shrink: 0;
       flex-grow: 1;
       border: 1px solid transparent;
       cursor: pointer;
+      background: var(--dark);
     }
 
     .tabs__btn_active {
-      background: #e0e0e0;
+      color: var(--warn);
       cursor: default;
     }
 
     .tabs__btn:not(.tabs__btn_active):hover,
     .tabs__btn:not(.tabs__btn_active):focus {
-      background-color: #eee;
+      color: var(--danger);
     }
 
     .tabs__pane {

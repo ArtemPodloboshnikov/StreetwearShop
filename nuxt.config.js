@@ -41,7 +41,12 @@ export default {
     '@nuxtjs/axios',
     'cookie-universal-nuxt',
     ['cookie-universal-nuxt', { alias: 'cookies' }],
+    '@nuxtjs/markdownit'
   ],
+
+  markdownit: {
+    runtime: true // Support `$md()`
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

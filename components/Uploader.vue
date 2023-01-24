@@ -96,7 +96,7 @@
                     this.set(datas);
                 }
                 // @ts-ignore
-                this.setFileList(Array.from(files).slice(0, this.limit))
+                this.setFileList(Array.from(files).slice(0, this.limit - 1))
             }
         },
     }

@@ -26,22 +26,47 @@
             </template>
             <template #second>
                 <div class="content">
-                    <div class="inputs_other">
-                        <Selects :set="setState('code')" :placeholder="placeholders.code" icon="barcode" :required="true" :options="initialData" like-input/>
+                    <div class="left_content">
                         <Selects :placeholder="placeholders.material" :set="setState('material')" :options="materials" icon="bookmark-alt"/>
                         <Selects :placeholder="placeholders.country" :set="setState('country')" :options="countries" icon="flag"/>
                         <Uploader :id="ids.product_photos" :multiple="true" :set-file-list="setState('photos')" :placeholder="placeholders.photos" />
                     </div>
-                    <div class="sizes">
-                        <Sizes section="admin" :sizes="SIZES" :gender-dependent="gender" single />
-                        <Inputs :set="setObjectState('count', size)" :placeholder="`${placeholders.count} '${size}'`" icon="bx bxs-component" />
-                        <ColorPicker section="admin" />
+                    <div class="middle_content">
+                        <Textareas class="textarea" :placeholder="placeholders.description" :set="setState('description')" />
                     </div>
                     <div class="selects">
                         <Genders section="admin" />
                         <Selects :placeholder="placeholders.category" :set="setState('category')" :options="Object.keys(categories[gender])" />
                         <Selects :placeholder="placeholders.subcategory" :set="setState('subcategory')" :options="categories[gender][category] || []" />
-                        <Textareas class="textarea" :placeholder="placeholders.description" :set="setState('description')" />
+                    </div>
+                </div>
+            </template>
+            <template #third>
+                <div class="content">
+                    <div class="sizes">
+                        <Sizes section="admin" :sizes="SIZES" :gender-dependent="gender" />
+                        <Inputs
+                        v-for="size in sizes"
+                        :key="size"
+                        :set="setObjectState('count_sizes', size)"
+                        :placeholder="`${placeholders.count_sizes} '${size}'`"
+                        type="number"
+                        :min="1"
+                        :postfix="size"
+                        />
+                    </div>
+                    <div class="colors">
+                        <ColorPicker section="admin" single />
+                    </div>
+                    <div class="codes">
+                        <Inputs
+                        v-for="(size, i) in countSizes"
+                        :key="`${size}_${i}`"
+                        :set="setObjectState('codes', `${size}_${i}`)"
+                        :placeholder="`${placeholders.code} '${size}'`"
+                        icon="barcode"
+                        :required="true"
+                        />
                     </div>
                     <div class="send">
                         <button @click="isFillFields">
@@ -52,11 +77,6 @@
                             {{ buttons.send_data }}
                         </button>
                     </div>
-                </div>
-            </template>
-            <template #third>
-                <div class="content">
-                    3...
                 </div>
             </template>
         </Tabs>
@@ -105,7 +125,8 @@
         TOAST_SAVE_DATA,
         ROOT_DATA_IMAGES,
         CATEGORIES_BY_LINK,
-        TOAST_UNSAVE_DATA
+        TOAST_UNSAVE_DATA,
+        COUNT_COLORS_PLACEHOLDER
      } from '@/constants/';
 
     import { getValueFromInput } from '@/helpers/getValueFromInput';
@@ -113,22 +134,7 @@
     import { formValidator } from '~/helpers/formValidator';
     import { DataFile } from '~/helpers/readFileAsDataURL';
     import { uploadFiles } from '~/helpers/uploadFiles';
-
-     type Product = {
-        description: string,
-        category: string,
-        subcategory: string,
-        material: string,
-        country: string,
-        sizes: string[],
-        colors: string[],
-        model: string,
-        brand: string,
-        price: number,
-        images: FileList,
-        gender: Gender,
-        code: string
-     }
+    import { ProductLoad } from '@/typings/';
 
     export default {
         components: {
@@ -157,7 +163,8 @@
                 category: CATEGORY_PLACEHOLDER,
                 subcategory: SUBCATEGORY_PLACEHOLDER,
                 code: PRODUCT_CODE_PLACEHOLDER,
-                count: COUNT_SIZES_PLACEHOLDER
+                count_sizes: COUNT_SIZES_PLACEHOLDER,
+                count_colors: COUNT_COLORS_PLACEHOLDER
             },
             ids: {
                 card_photo: CARD_PHOTO_ID,
@@ -169,7 +176,7 @@
                 update_data: UPDATE_DATA_BTN
             },
             preview: false,
-            tabs: ['Карточка', 'Страница', 'Категории'],
+            tabs: ['Карточка', 'Общие', 'Размеры и коды'],
             SIZES,
             categories: CATEGORIES,
             materials: MATERIALS,
@@ -179,7 +186,8 @@
             toastCode: TOAST_EMPTY_FIELDS,
             send_disabled: false,
             initialData: ['cool12'],
-            product_save_mes: ''
+            product_save_mes: '',
+            countSizes: [] as string[]
         }),
         computed: {
             brand(): string {
@@ -194,9 +202,16 @@
                 // @ts-ignore
                 return Number(this.$store.state.admin.price);
             },
-            count(): {[key: string]: number} {
+            count_sizes(): {[key: string]: number} {
                 // @ts-ignore
-                return this.$store.state.admin.count;
+                const countSizes = this.$store.state.admin.count_sizes;
+                Object.keys(countSizes)
+                // @ts-ignore
+                .filter(size => !this.sizes.includes(size))
+                // @ts-ignore
+                .forEach(size => this.$store.commit('admin/remove', {name: 'count_sizes', value: '', keyObject: size}))
+                // @ts-ignore
+                return this.$store.state.admin.count_sizes;
             },
             card(): DataFile {
                 // @ts-ignore
@@ -234,21 +249,71 @@
                 // @ts-ignore
                 return this.$store.state.admin.material;
             },
-            colors(): string[] {
+            color(): string {
                 // @ts-ignore
-                return this.$store.state.admin.colors;
+                return this.$store.state.admin.colors[0];
             },
-            size(): string {
+            sizes(): string[] {
                 // @ts-ignore
-                return this.$store.state.admin.sizes[0];
+                return this.$store.state.admin.sizes;
             },
-            code(): string {
+            codes(): {[size: string]: string[]} {
+                const newCodes: {[size: string]: string[]} = {};
                 // @ts-ignore
-                return this.$store.state.admin.code;
+                let codes = this.$store.state.admin.codes;
+                console.log( Object.keys(codes)
+                // @ts-ignore
+                .map(size => (!this.sizes.includes(size.split('_')[0]) || this.count_sizes[size.split('_')[0]] === 0)))
+                Object.keys(codes)
+                // @ts-ignore
+                .filter(size => (!this.sizes.includes(size.split('_')[0]) || this.count_sizes[size.split('_')[0]] === 0))
+                // .forEach(size => console.log(size))
+                // @ts-ignore
+                .forEach(size => this.$store.commit('admin/remove', {name: 'codes', value: '', keyObject: size}))
+                // @ts-ignore
+                codes = this.$store.state.admin.codes;
+                Object.keys(codes)
+                .forEach(size => {
+                    if (newCodes[size.split('_')[0]]) {
+                        newCodes[size.split('_')[0]].push(codes[size])
+                    } else {
+                        newCodes[size.split('_')[0]] = [codes[size]]
+                    }
+                });
+                console.log(codes);
+                return newCodes;
             },
+        },
+        mounted() {
+            // @ts-ignore
+            this.$store.subscribe(
+                // @ts-ignore
+                (mutations) => {
+                    const getCount = () => {
+                        // @ts-ignore
+                        const countSizes: {[key: string]: number} = this.count_sizes;
+                        const count: string[] = [];
+                        Object.keys(countSizes).forEach(size => count.push(...new Array(countSizes[size]).fill(size)))
+                        // @ts-ignore
+                        this.countSizes = count;
+                    }
+                    switch(mutations.type) {
+                        case 'admin/set': {
+                            getCount()
+                            break;
+                        }
+                        case 'admin/remove': {
+                            getCount()
+                            break;
+                        }
+                    }
+                }
+            )
         },
         methods: {
             isFillCard() {
+                // @ts-ignore
+                console.log(this.codes)
                 // @ts-ignore
                 if (this.model && this.brand && this.price && this.card) {
                     return true;
@@ -259,9 +324,11 @@
             async isFillFields() {
                 const dt = new DataTransfer();
                 // @ts-ignore
-                [...this.cards, ...this.photos].forEach(file => dt.items.add(file))
+                [...this.cards, ...this.photos].forEach(file => dt.items.add(file));
+                // @ts-ignore
+                console.log(this.count_sizes)
 
-                const product: Product = {
+                const product: ProductLoad = {
                     // @ts-ignore
                     description: this.description,
                     // @ts-ignore
@@ -273,7 +340,7 @@
                     // @ts-ignore
                     country: this.country,
                     // @ts-ignore
-                    sizes: this.count,
+                    sizes: this.count_sizes,
                     // @ts-ignore
                     model: this.model,
                     // @ts-ignore
@@ -285,14 +352,14 @@
                     // @ts-ignore
                     gender: this.gender,
                     // @ts-ignore
-                    colors: this.colors,
+                    color: this.color,
                     // @ts-ignore
-                    code: this.code
+                    codes: this.codes
                 }
                 // @ts-ignore
                 if (this.isFillCard() && formValidator(product)) {
                         // @ts-ignore
-                        const response = await this.createProduct(product);
+                        const response = await this.createProductLoad(product);
                         console.log(response);
                         // @ts-ignore
                         const acronym = slugify(`${response.model}-${response._id}`, { lowercase: true });
@@ -300,7 +367,7 @@
                         const indexSubcategoryLink = CATEGORIES_BY_LINK[category].titles.indexOf(response.subcategory.toLowerCase());
                         const subcategory = CATEGORIES_BY_LINK[category].tos[indexSubcategoryLink];
                         // @ts-ignore
-                        this.product_save_mes = `Вы можете увидеть страницу товара по ссылке localhost:3000${category}${subcategory}/${acronym}`;
+                        this.product_save_mes = `Вы можете увидеть страницу товара по [ссылке](localhost:3000${category}${subcategory}/${acronym})`;
 
                 } else {
                     // @ts-ignore
@@ -329,15 +396,15 @@
                 // @ts-ignore
                 this.isToast = false;
             },
-            async createProduct(product: Product): Promise<any> {
+            async createProductLoad(product: ProductLoad): Promise<any> {
                 try {
                     console.log(product)
                     // @ts-ignore
                     const files = await uploadFiles(this.$axios.$post, product.images, `${this.brand}_${this.model}`)
                     // @ts-ignore
-                    const newProduct = {...product, images: files.map(file => file.url)};
+                    const newProductLoad = {...product, images: files.map(file => file.url)};
                     // @ts-ignore
-                    const response = await this.$axios.post(API_CREATE_PRODUCT, newProduct, getApiHeaders(true));
+                    const response = await this.$axios.post(API_CREATE_PRODUCT, newProductLoad, getApiHeaders(true));
                     // @ts-ignore
                     this.isToast = true;
                     // @ts-ignore
@@ -363,7 +430,7 @@
     }
 
     .inputs_card,
-    .inputs_other,
+    .left_content,
     .selects {
         display: flex;
         flex-direction: column;
@@ -392,7 +459,7 @@
         grid-column: 2 / 4;
     }
 
-    .sizes {
+    .middle_content {
         grid-column: 5 / 9;
         margin-top: 14%;
         display: flex;
@@ -420,5 +487,25 @@
 
     .textarea {
         height: 300px;
+    }
+
+    .sizes,
+    .colors,
+    .codes {
+        grid-column:  2 / 6;
+        margin-top: 14%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .colors {
+        grid-column: 6 / 10;
+    }
+    .codes {
+        grid-column: 10 / 12;
+        margin-top: 30%;
+        height: 85%;
+        overflow: auto;
     }
 </style>

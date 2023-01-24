@@ -10,7 +10,7 @@
             v-for="size in sizes_constant"
             :key="size"
             :class="`${ active_sizes.includes(size) ? 'active' : (sizes.includes(size) ? '' : 'none')} size`"
-            @click="() => changeSize(size)"
+            @click="(e) => changeSize(size, e)"
             >
                 {{size}}
             </div>
@@ -107,28 +107,30 @@
             }
         },
         methods: {
-            changeSize(size: string) {
-                // @ts-ignore
-                if (this.active_sizes.includes(size) && this.active_sizes.length > 1) {
+            changeSize(size: string, e: any) {
+                if (!e.target.classList.contains('none')) {
                     // @ts-ignore
-                    this.active_sizes.splice(this.active_sizes.indexOf(size), 1);
+                    if (this.active_sizes.includes(size) && this.active_sizes.length > 1) {
+                        // @ts-ignore
+                        this.active_sizes.splice(this.active_sizes.indexOf(size), 1);
+                        // @ts-ignore
+                        this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: size});
+                        // @ts-ignore
+                    } else if (!this.active_sizes.includes(size)) {
+                        // @ts-ignore
+                        this.active_sizes.push(size);
+                        // @ts-ignore
+                        this.$store.commit(`${this.section}/set`, { name: 'sizes', value: this.active_sizes});
+                    }
                     // @ts-ignore
-                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: size});
-                    // @ts-ignore
-                } else if (!this.active_sizes.includes(size)) {
-                    // @ts-ignore
-                    this.active_sizes.push(size);
-                    // @ts-ignore
-                    this.$store.commit(`${this.section}/set`, { name: 'sizes', value: this.active_sizes});
-                }
-                // @ts-ignore
-                if (this.single && this.active_sizes.length === 2) {
-                    // @ts-ignore
-                    const anotherSize = this.active_sizes.find(s => s !== size);
-                    // @ts-ignore
-                    this.active_sizes.splice(this.active_sizes.indexOf(anotherSize), 1);
-                    // @ts-ignore
-                    this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: anotherSize});
+                    if (this.single && this.active_sizes.length === 2) {
+                        // @ts-ignore
+                        const anotherSize = this.active_sizes.find(s => s !== size);
+                        // @ts-ignore
+                        this.active_sizes.splice(this.active_sizes.indexOf(anotherSize), 1);
+                        // @ts-ignore
+                        this.$store.commit(`${this.section}/remove`, { name: 'sizes', value: anotherSize});
+                    }
                 }
             },
             toggleTable() {
@@ -173,6 +175,7 @@
     .none {
         color: var(--dark);
         background: transparent;
+        cursor: default;
     }
 
     .active {
