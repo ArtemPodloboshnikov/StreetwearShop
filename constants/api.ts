@@ -14,3 +14,5 @@ export const API_USER_UPDATE = `${BASE_API_ROUTE}user/update`;
 export const API_USER_SELF = `${BASE_API_ROUTE}user/self`;
 
 export const API_STATIC_FILE = `${BASE_ROUTE}/static`;
+
+export const API_CART_FIND = `${BASE_API_ROUTE}cart`;

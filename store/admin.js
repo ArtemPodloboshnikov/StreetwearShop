@@ -9,7 +9,7 @@ export const state = () => ({
     material: '',
     country: '',
     category: '',
-    gender: 'мужчина',
+    gender: 'Мужчина',
     subcategory: '',
     card: [],
     cards: [],

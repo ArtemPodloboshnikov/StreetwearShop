@@ -1,20 +1,25 @@
 <template>
     <div class="content">
-        <PhotoViewer class="viewer" :photos="products[productIndex].images||[]" />
+        <PhotoViewer class="viewer" :photos="products[productIndex]?.images||[]" />
+        <Comments class="comments" :comments="comments" />
         <div class="info">
-            <h1 class="title">{{ products[productIndex].model.toUpperCase() || '' }}</h1>
+            <h1 class="title">{{ products[productIndex]?.model.toUpperCase() || '' }}</h1>
             <div class="features">
                 <div class="feature">
                     <h4>{{ titles.brand }}</h4>
-                    <span>{{ products[productIndex].brand || ''}}</span>
+                    <span>{{ products[productIndex]?.brand || ''}}</span>
                 </div>
                 <div class="feature">
                     <h4>{{ titles.material }}</h4>
-                    <span>{{ products[productIndex].material || '' }}</span>
+                    <span>{{ products[productIndex]?.material || '' }}</span>
                 </div>
                 <div class="feature">
                     <h4>{{ titles.country }}</h4>
-                    <span>{{ products[productIndex].country || '' }}</span>
+                    <span>{{ products[productIndex]?.country || '' }}</span>
+                </div>
+                <div class="feature">
+                    <h4>{{ titles.gender }}</h4>
+                    <span>{{ products[productIndex]?.gender || '' }}</span>
                 </div>
                 <div class="feature">
                     <h4>{{ titles.color }}</h4>
@@ -23,16 +28,16 @@
                         v-for="(color, i) in colors"
                         :key="color"
                         tag="img"
-                        :src="`${API_STATIC_FILE}/${[products[i].images[0]]}`"
+                        :src="`${API_STATIC_FILE}/${products[i]?.images[0] || ''}`"
                         :alt="products[i].model"
-                        :style="`${!i ? 'cursor: default' : ''}`"
-                        :to="i ? `${products[i].modelLatin}-${products[i]._id}` : ''"
+                        :style="`${i === productIndex ? 'cursor: default; border: 4px solid var(--danger);' : ''}`"
+                        :to="i !== productIndex ? `${products[i]?.modelLatin || ''}-${products[i]?._id || ''}` : ''"
                         >
                         </nuxt-link>
                     </span>
                 </div>
             </div>
-            <div class="description">{{ products[productIndex].description || '' }}</div>
+            <div class="description">{{ products[productIndex]?.description || '' }}</div>
             <Sizes class="sizes" section="product" :gender-dependent="gender" :sizes="sizes" />
             <div class="links">
                 <nuxt-link :to="links.terms_return" class="link_rules">
@@ -40,7 +45,7 @@
                 </nuxt-link>
             </div>
             <h2 class="price">
-                {{ products[productIndex].price }}₽
+                {{ products[productIndex]?.price || '' }}₽
             </h2>
             <div class="buttons">
                 <button>
@@ -63,12 +68,14 @@
         TERMS_RETURN,
         TERMS_RETURN_TEXT,
         COLOR_TITLE,
+        GENDER_TITLE,
         BUY_BTN_TEXT,
         CART_BTN_TEXT
     } from '~/constants';
     import PhotoViewer from '~/components/PhotoViewer.vue';
+    import Comments from '~/components/Comments.vue';
     import Sizes from '~/components/Sizes.vue';
-    import { Product } from '~/typings';
+    import { Product, CommentsType } from '~/typings';
     import { getApiHeaders } from '~/helpers/getApiHeaders';
     import { getValueFromInput } from '~/helpers/getValueFromInput';
 
@@ -80,28 +87,16 @@
     }
 
     export default {
-        components: { PhotoViewer, Sizes },
+        components: { PhotoViewer, Comments, Sizes },
         layout: 'sidebar-only',
-        // @ts-ignore
-        async asyncData({$axios, route}) {
-            const {modelLatin, id} = getModelAndId(route.params.id);
-            console.log(`${API_PRODUCT_FIND}/${modelLatin}`)
-            const response = await $axios.get(encodeURI(`${API_PRODUCT_FIND}/${modelLatin}`), getApiHeaders());
-            let products: Product[] = response.data;
-            const product = products.find(prod => prod._id === id);
-            products = products.filter(d => d._id !== id)
-            console.log([product, ...products])
-            return { products: [product, ...products], id }
-        },
         data: () => ({
-            products: [] as Product[],
-            id: undefined,
-            productIndex: 0,
+            id: '',
             titles: {
                 brand: BRAND_PLACEHOLDER,
                 material: MATERIAL_PLACEHOLDER,
                 country: COUNTRY_PLACEHOLDER,
-                color: COLOR_TITLE
+                color: COLOR_TITLE,
+                gender: GENDER_TITLE
             },
             links: {
                 terms_return: TERMS_RETURN
@@ -113,6 +108,32 @@
             },
             API_STATIC_FILE
         }),
+        async fetch() {
+            // @ts-ignore
+            const {modelLatin, id} = getModelAndId(this.$route.params.id);
+            // @ts-ignore
+            if (this.products.length === 0) {
+                // @ts-ignore
+                const response = await this.$axios.get(encodeURI(`${API_PRODUCT_FIND}/${modelLatin}`), getApiHeaders());
+                let products: Product[] = response.data;
+                const product = products.find(prod => prod._id === id)!;
+                products = products.filter(d => d._id !== id)
+                console.log([product, ...products])
+                // @ts-ignore
+                this.setState('products')([product, ...products]);
+            } else {
+                // @ts-ignore
+                this.products.forEach((prod, i) => {
+                    if (prod._id === id) {
+                        // @ts-ignore
+                        this.setState('productIndex')({target: {value: i}})
+                    }
+                })
+            }
+            // @ts-ignore
+            this.id = id;
+            // return { products: [product, ...products], id }
+        },
         computed: {
             gender(): string {
                 // @ts-ignore
@@ -127,9 +148,29 @@
                 map((color, i) => !i ? color[0].toUpperCase() + color.slice(1) : color)
             },
             sizes(): string[] {
+                // @ts-ignore
                 this.$store.commit('product/set', {name: 'sizes', value: []})
                 // @ts-ignore
-                return Object.keys(this.products[this.productIndex].sizes)
+                return Object.keys(this.products[this.productIndex]?.sizes||{})
+            },
+            products(): Product[] {
+                // @ts-ignore
+                return this.$store.state.product.products;
+            },
+            comments(): CommentsType[] {
+                // @ts-ignore
+                return this.products[this.productIndex].comments.map(comment => {
+                    return {
+                        avatar: comment.user!.avatar,
+                        name: comment.user!.name,
+                        text: comment.text,
+                        like: comment.like
+                    }
+                })
+            },
+            productIndex(): number {
+                // @ts-ignore
+                return this.$store.state.product.productIndex;
             }
         },
         methods: {
@@ -137,19 +178,29 @@
                 // @ts-ignore
                 return (e: any) => this.$store.commit('product/set', { name: stateName, value: getValueFromInput(e)})
             },
+            isUndefined(variable: any, dataReturn: any) {
+                if (variable === undefined) {
+                    return ''
+                } else {
+                    return dataReturn
+                }
+            }
         }
     }
 </script>
 <style scoped>
+    .content {
+        grid-template-rows: 500px auto;
+    }
     .viewer {
         grid-column: 2 / 6;
     }
-
     .info {
         grid-column: 7 / 11;
+        grid-row: 1 / 3;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 100px 320px 210px 55px;
+        grid-template-rows: 100px 380px 210px 55px;
         gap: 10px;
     }
 
@@ -199,7 +250,6 @@
         display: grid;
         align-items: center;
         justify-items: center;
-        margin: 0;
         height: fit-content;
     }
 
@@ -232,5 +282,11 @@
     .buttons > button {
         height: 70px;
         font-size: 40px;
+    }
+
+    .comments {
+        grid-column: 2 / 6;
+        grid-row: 2 / 3;
+        height: 445px;
     }
 </style>

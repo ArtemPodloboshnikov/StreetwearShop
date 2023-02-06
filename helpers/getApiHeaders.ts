@@ -15,11 +15,11 @@ type Headers = {
     headers: typeof config | {'Authorization'?: string}
 }
 
-export function getApiHeaders(auth=false, jwt?: string, isFiles=false): Headers {
+export function getApiHeaders(auth=false, jwt=getCookie(ACCESS_TOKEN_NAME), isFiles=false): Headers {
     if (auth) {
         const headers = {
                 ...config,
-                'Authorization': `Bearer ${jwt || getCookie(ACCESS_TOKEN_NAME)}`
+                'Authorization': `Bearer ${jwt}`
         }
 
         return {

@@ -1,6 +1,6 @@
 <template>
     <div :class="`card ${$attrs.class}`">
-        <img class="image" :src="src" :alt="alt" />
+        <nuxt-link tag="img" class="image" :src="src" :alt="alt" :to="to" />
         <div class="titles">
             <h1>{{brand}}</h1>
             <h3>{{model.length >= 16 ? (model.slice(0, 16) + '...') : model}}</h3>
@@ -26,6 +26,10 @@
             price: {
                 type: Number,
                 required: true
+            },
+            to: {
+                type: String,
+                default: ''
             },
             src: {
                 type: String,
@@ -55,6 +59,7 @@
     display: grid;
     grid-template-rows: 70% 20% 10%;
     height: 350px;
+    grid-column: span 2;
   }
   .titles {
     display: flex;
@@ -69,6 +74,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    cursor: pointer;
   }
   .price {
     background: var(--warn);

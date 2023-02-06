@@ -83,10 +83,15 @@
             likeInput: {
                 type: Boolean,
                 default: false
+            },
+            val: {
+                type: String,
+                default: ''
             }
         },
-        data: () => ({
-            value: '',
+        // @ts-ignore
+        data: ({val}) => ({
+            value: val,
             show_options: false,
             error: false
         }),

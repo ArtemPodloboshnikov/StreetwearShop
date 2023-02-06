@@ -2,8 +2,8 @@ import { ACCESSORIES_PATH, OUTERWEAR_PATH, SHOES_PATH, UNDERWEAR_PATH } from "./
 
 // sidebar
 export enum Gender {
-    MALE = 'мужчина',
-    FEMALE = 'женщина'
+    MALE = 'Мужчина',
+    FEMALE = 'Женщина'
 }
 
 // category
@@ -373,3 +373,9 @@ export const TOAST_BAD_FORMAT = 'bad_format';
 export const TOAST_EMPTY_FIELDS = 'empty_fields';
 export const TOAST_SAVE_DATA = 'save_data';
 export const TOAST_UNSAVE_DATA = 'unsave_data';
+
+// cart
+export const PERIODS = [
+    'Как можно скорее',
+    ''
+]

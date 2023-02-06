@@ -30,7 +30,7 @@
         API_USER_SELF,
         API_STATIC_FILE,
         TOAST_EMPTY_FIELDS,
-TOAST_SAVE_DATA
+        TOAST_SAVE_DATA
     } from '@/constants/';
     import Avatar from '~/components/Avatar.vue';
     import Inputs from '~/components/Input.vue';

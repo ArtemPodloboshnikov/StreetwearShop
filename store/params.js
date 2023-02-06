@@ -1,5 +1,5 @@
 export const state = () => ({
-    gender: 'мужчина',
+    gender: 'Мужчина',
     colors: ['чёрный'],
     sizes: ['XS']
 })

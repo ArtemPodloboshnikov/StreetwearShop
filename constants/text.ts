@@ -45,5 +45,6 @@ export const TITLE_SAVE = 'Сохранено';
 // product
 export const TERMS_RETURN_TEXT = 'Условия возврата';
 export const COLOR_TITLE = 'Цвета';
+export const GENDER_TITLE = 'Пол';
 export const BUY_BTN_TEXT = 'Купить';
 export const CART_BTN_TEXT = 'В корзину';

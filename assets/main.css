@@ -88,6 +88,10 @@ textarea::placeholder {
     text-align: center;
 }
 
+h2, h5 {
+    margin: 0;
+}
+
 .content {
     height: 100%;
     display: grid;
