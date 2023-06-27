@@ -36,27 +36,14 @@
 <script lang="ts">
     // eslint-disable-next-line import/named
     import { Dictionary } from 'vue-router/types/router';
-    import { COMPANY_NAME, NAVBAR_OPTIONS, CATEGORIES_BY_LINK, API_PRODUCT_FIND, Colors, Gender } from '@/constants/';
+    import { COMPANY_NAME, NAVBAR_OPTIONS, CATEGORIES_BY_LINK, API_PRODUCT_FIND } from '@/constants/';
+    import { Product } from '@/typings/';
     import { matchPaths } from '@/helpers/matchPaths';
     import Card from '~/components/Card.vue';
     import Paginator from '~/components/Paginator.vue';
     import { getApiHeaders } from '~/helpers/getApiHeaders';
 
-    export type Product = {
-      _id: string,
-      code: string,
-      images: string[],
-      brand: string,
-      model: string,
-      material: string,
-      country: string,
-      category: string,
-      subcategory: string,
-      gender: Gender,
-      price: number,
-      colors: Colors[],
-      sizes: string[]
-    }
+
 
     const pages = new Array(100).fill(1).map((_, i) => { return i+1})
     export default {

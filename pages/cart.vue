@@ -17,6 +17,9 @@
                             :price="currentPrice(wait._id)"
                             :to="`${wait.modelLatin}-${wait._id}`"
                             />
+                            <Inputs
+                            placeholder=""
+                            />
                         </div>
                     </div>
                 </div>
@@ -38,12 +41,13 @@
 <script lang="ts">
     import Tabs from '~/components/Tabs.vue';
     import Card from '~/components/Card.vue';
+    import Inputs from '~/components/Input.vue';
     import { ACCESS_TOKEN_NAME, API_CART_FIND, API_STATIC_FILE } from '@/constants/';
     import { Cart } from '@/typings/';
     import { getApiHeaders } from '~/helpers/getApiHeaders';
 
     export default {
-        components: { Tabs, Card },
+        components: { Tabs, Card, Inputs },
         layout: 'sidebar-only',
         // @ts-ignore
         async asyncData({$axios, app}) {
@@ -57,7 +61,10 @@
         data: () => ({
             tabs: ['Ожидание', 'Активные', 'Доставленные'],
             cart: {} as Cart,
-            API_STATIC_FILE
+            API_STATIC_FILE,
+            placeholders: {
+                
+            }
         }),
         computed: {
         },
