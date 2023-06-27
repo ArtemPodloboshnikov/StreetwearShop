@@ -1,0 +1,114 @@
+:root {
+  --primary: #FCFCFC;
+  --success: #3B54E8;
+  --danger: #E64056;
+  --warn: #FF9000;
+  --dark: #1E0120;
+}
+
+@font-face {
+  font-family: 'Ordina-Semibold';
+  src: local('Ordina-Semibold'),
+    url('~assets/fonts/Ordina-Semibold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Ordina-Bold';
+    src: local('Ordina-Bold'),
+      url('~assets/fonts/Ordina-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Ordina-Regular';
+    src: local('Ordina-Regular'),
+      url('~assets/fonts/Ordina-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Ordina-Medium';
+    src: local('Ordina-Medium'),
+      url('~assets/fonts/Ordina-Medium.ttf') format('truetype');
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Ordina-Semibold';
+}
+
+html, body {
+    background-blend-mode: overlay;
+    background-image: linear-gradient(45deg, var(--dark), var(--dark)), url('noise.jpg');
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+main {
+    /* width: calc(100% - 50px);
+    max-width: calc(100% - 260px); */
+    height: 100vh;
+}
+
+button,
+summary {
+    cursor: pointer;
+}
+
+input, button {
+    outline: none;
+    border: none;
+}
+
+button {
+    text-transform: uppercase;
+    font-family: 'Ordina-Bold';
+    font-size: 20px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input, textarea {
+    font-size: 16px;
+}
+
+textarea {
+    outline: none;
+    border: none;
+    color: var(--dark) !important;
+    resize: none;
+    padding: 10px 10px 10px 15px;
+}
+
+textarea::placeholder {
+    text-align: center;
+}
+
+h2, h5 {
+    margin: 0;
+}
+
+.content {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 20px;
+}
+
+.content > * {
+    color: var(--primary);
+}
+
+.link_rules {
+    text-decoration: none;
+    border-bottom: 3px solid var(--warn);
+    color: var(--primary);
+    height: fit-content;
+    width: fit-content;
+    font-family: 'Ordina-Regular';
+    font-size: 20px;
+}

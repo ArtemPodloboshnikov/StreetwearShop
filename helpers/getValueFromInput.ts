@@ -1,0 +1,1 @@
+export const getValueFromInput = (e: any) => { return (e?.target?.value !== undefined ? e?.target?.value : (Array.isArray(e) ? e : ''))}
